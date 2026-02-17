@@ -26,6 +26,23 @@ public class JsonToBpmn2Converter {
 
     private static final String DISPATCHER_CLASS =
         "com.iongroup.library.adapter.flowable.OperationDispatcherDelegate";
+    // ------------------------------------------------------------------------
+    // PUBLIC API for programmatic use (Spring, tests, etc.)
+
+    public static BpmnModel convertAndEnrich(JsonNode editorRoot) {
+
+        BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
+        BpmnModel model = jsonConverter.convertToBpmnModel(editorRoot);
+
+        if (model == null || model.getProcesses().isEmpty()) {
+            throw new IllegalStateException("No BPMN processes generated from JSON");
+        }
+
+        // 🔧 reuse existing logic (NO DUPLICATION)
+        enrichTasks(editorRoot, model);
+
+        return model;
+    }
 
     public static void main(String[] args) throws Exception {
 
