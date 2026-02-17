@@ -126,9 +126,9 @@ public class UiToFlowableConverter {
             }
 
             // -------------------------------------------------
-            // 🔥 customFields (design-time parameters like AMOUNT)
+            //  customFields (design-time parameters like AMOUNT)
             // -------------------------------------------------
-            // 🔥 customFields (design-time parameters)
+            //  customFields (design-time parameters)
             JsonNode customFields = data.get("customFields");
             if (customFields != null && customFields.isObject()) {
                 Iterator<Map.Entry<String, JsonNode>> it = customFields.fields();

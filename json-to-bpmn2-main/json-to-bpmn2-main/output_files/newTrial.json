@@ -19,16 +19,16 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -801.8428015389602,
-        "y" : -430.49473037217587
+        "x" : -319.5,
+        "y" : 93.04544830322266
       },
       "lowerRight" : {
-        "x" : -701.8428015389602,
-        "y" : -330.49473037217587
+        "x" : -219.5,
+        "y" : 193.04544830322266
       }
     },
     "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_0s-right-node_1s-left"
+      "resourceId" : "reactflow__edge-node_0s-right-node_1t-left"
     } ],
     "incoming" : [ ]
   }, {
@@ -46,48 +46,42 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -695.6300343942008,
-        "y" : -255.9636387464057
+        "x" : -165.75,
+        "y" : 99.56817245483398
       },
       "lowerRight" : {
-        "x" : -535.6300343942008,
-        "y" : -175.9636387464057
+        "x" : -5.75,
+        "y" : 179.56817245483398
       }
     },
     "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_1s-right-node_2t-left"
+      "resourceId" : "reactflow__edge-node_1s-right-node_3t-left"
     } ],
     "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_0s-right-node_1s-left"
+      "resourceId" : "reactflow__edge-node_0s-right-node_1t-left"
     } ]
   }, {
     "resourceId" : "node_2",
     "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "StartLoanApplication",
-      "delegationName" : "StartLoanApplication",
-      "delegationType" : "SERVICE"
+      "overrideid" : "endEvent"
     },
     "stencil" : {
-      "id" : "ServiceTask"
+      "id" : "EndNoneEvent"
     },
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -464.12696218233623,
-        "y" : -253.82009178148104
+        "x" : 244.75,
+        "y" : 89.06817245483398
       },
       "lowerRight" : {
-        "x" : -304.12696218233623,
-        "y" : -173.82009178148104
+        "x" : 344.75,
+        "y" : 189.06817245483398
       }
     },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_2s-right-node_3t-left"
-    } ],
+    "outgoing" : [ ],
     "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_1s-right-node_2t-left"
+      "resourceId" : "reactflow__edge-node_3s-right-node_2s-left"
     } ]
   }, {
     "resourceId" : "node_3",
@@ -104,224 +98,24 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -228.33679604062223,
-        "y" : -257.03541222886804
+        "x" : 37.25,
+        "y" : 97.56817245483398
       },
       "lowerRight" : {
-        "x" : -68.33679604062223,
-        "y" : -177.03541222886804
+        "x" : 197.25,
+        "y" : 177.56817245483398
       }
     },
     "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_3s-right-node_4t-left"
+      "resourceId" : "reactflow__edge-node_3s-right-node_2s-left"
     } ],
     "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_2s-right-node_3t-left"
+      "resourceId" : "reactflow__edge-node_1s-right-node_3t-left"
     } ]
   }, {
-    "resourceId" : "node_4",
+    "resourceId" : "reactflow__edge-node_0s-right-node_1t-left",
     "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "CheckEligibility",
-      "delegationName" : "CheckEligibility",
-      "delegationType" : "SERVICE",
-      "requestedAmountLimit" : "100000000"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 11.740464030941098,
-        "y" : -251.67654481655637
-      },
-      "lowerRight" : {
-        "x" : 171.7404640309411,
-        "y" : -171.67654481655637
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_4s-right-node_5t-left"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_3s-right-node_4t-left"
-    } ]
-  }, {
-    "resourceId" : "node_5",
-    "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "GetLoanPolicy",
-      "delegationName" : "GetLoanPolicy",
-      "delegationType" : "SERVICE"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 245.38708320773048,
-        "y" : -270.96846750087843
-      },
-      "lowerRight" : {
-        "x" : 405.3870832077305,
-        "y" : -190.96846750087843
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_5s-bottom-node_6t-top"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_4s-right-node_5t-left"
-    } ]
-  }, {
-    "resourceId" : "node_6",
-    "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "CreateLoanOffer",
-      "delegationName" : "CreateLoanOffer",
-      "delegationType" : "SERVICE"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 256.1048180323538,
-        "y" : -58.75731797333585
-      },
-      "lowerRight" : {
-        "x" : 416.1048180323538,
-        "y" : 21.24268202666415
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_6s-left-node_7t-right"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_5s-bottom-node_6t-top"
-    } ]
-  }, {
-    "resourceId" : "node_7",
-    "properties" : {
-      "name" : "Finalize Script",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "CustomerApproval",
-      "delegationName" : "CustomerApproval",
-      "delegationType" : "SERVICE",
-      "scriptformat" : "javascript",
-      "script" : "execution.setVariable('final', true);"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 6.38159661862943,
-        "y" : -59.82909145579815
-      },
-      "lowerRight" : {
-        "x" : 166.38159661862943,
-        "y" : 20.17090854420185
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_7s-left-node_8t-right"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_6s-left-node_7t-right"
-    } ]
-  }, {
-    "resourceId" : "node_8",
-    "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "NotifyCustomer",
-      "delegationName" : "NotifyCustomer",
-      "delegationType" : "SERVICE"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -225.12147559323515,
-        "y" : -60.90086493826048
-      },
-      "lowerRight" : {
-        "x" : -65.12147559323515,
-        "y" : 19.099135061739517
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_8s-left-node_9s-right"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_7s-left-node_8t-right"
-    } ]
-  }, {
-    "resourceId" : "node_9",
-    "properties" : {
-      "name" : "Service Call",
-      "resultvariable" : "serviceOutput",
-      "delegationId" : "EndLoanApplication",
-      "delegationName" : "EndLoanApplication",
-      "delegationType" : "SERVICE"
-    },
-    "stencil" : {
-      "id" : "ServiceTask"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -449.1221334278635,
-        "y" : -72.69037324534622
-      },
-      "lowerRight" : {
-        "x" : -289.1221334278635,
-        "y" : 7.309626754653777
-      }
-    },
-    "outgoing" : [ {
-      "resourceId" : "reactflow__edge-node_9s-left-node_10t-right"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_8s-left-node_9s-right"
-    } ]
-  }, {
-    "resourceId" : "node_10",
-    "properties" : {
-      "overrideid" : "endEvent"
-    },
-    "stencil" : {
-      "id" : "EndNoneEvent"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -685.9840730520398,
-        "y" : -67.3315058330345
-      },
-      "lowerRight" : {
-        "x" : -585.9840730520398,
-        "y" : 32.6684941669655
-      }
-    },
-    "outgoing" : [ ],
-    "incoming" : [ {
-      "resourceId" : "reactflow__edge-node_9s-left-node_10t-right"
-    } ]
-  }, {
-    "resourceId" : "reactflow__edge-node_0s-right-node_1s-left",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_0s-right-node_1s-left"
+      "overrideid" : "reactflow__edge-node_0s-right-node_1t-left"
     },
     "stencil" : {
       "id" : "SequenceFlow"
@@ -329,12 +123,12 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -761.8428015389602,
-        "y" : -390.49473037217587
+        "x" : -279.5,
+        "y" : 129.56817245483398
       },
       "lowerRight" : {
-        "x" : -605.6300343942008,
-        "y" : -205.9636387464057
+        "x" : -75.75,
+        "y" : 153.04544830322266
       }
     },
     "dockers" : [ {
@@ -354,9 +148,9 @@
       "resourceId" : "node_1"
     }
   }, {
-    "resourceId" : "reactflow__edge-node_1s-right-node_2t-left",
+    "resourceId" : "reactflow__edge-node_1s-right-node_3t-left",
     "properties" : {
-      "overrideid" : "reactflow__edge-node_1s-right-node_2t-left"
+      "overrideid" : "reactflow__edge-node_1s-right-node_3t-left"
     },
     "stencil" : {
       "id" : "SequenceFlow"
@@ -364,12 +158,12 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -625.6300343942008,
-        "y" : -225.9636387464057
+        "x" : -95.75,
+        "y" : 127.56817245483398
       },
       "lowerRight" : {
-        "x" : -374.12696218233623,
-        "y" : -203.82009178148104
+        "x" : 127.25,
+        "y" : 149.56817245483398
       }
     },
     "dockers" : [ {
@@ -380,18 +174,18 @@
       "y" : 15.0
     } ],
     "outgoing" : [ {
-      "resourceId" : "node_2"
+      "resourceId" : "node_3"
     } ],
     "incoming" : [ {
       "resourceId" : "node_1"
     } ],
     "target" : {
-      "resourceId" : "node_2"
+      "resourceId" : "node_3"
     }
   }, {
-    "resourceId" : "reactflow__edge-node_2s-right-node_3t-left",
+    "resourceId" : "reactflow__edge-node_3s-right-node_2s-left",
     "properties" : {
-      "overrideid" : "reactflow__edge-node_2s-right-node_3t-left"
+      "overrideid" : "reactflow__edge-node_3s-right-node_2s-left"
     },
     "stencil" : {
       "id" : "SequenceFlow"
@@ -399,12 +193,12 @@
     "childShapes" : [ ],
     "bounds" : {
       "upperLeft" : {
-        "x" : -394.12696218233623,
-        "y" : -227.03541222886804
+        "x" : 107.25,
+        "y" : 127.56817245483398
       },
       "lowerRight" : {
-        "x" : -138.33679604062223,
-        "y" : -203.82009178148104
+        "x" : 304.75,
+        "y" : 149.06817245483398
       }
     },
     "dockers" : [ {
@@ -415,258 +209,13 @@
       "y" : 15.0
     } ],
     "outgoing" : [ {
-      "resourceId" : "node_3"
-    } ],
-    "incoming" : [ {
       "resourceId" : "node_2"
     } ],
-    "target" : {
-      "resourceId" : "node_3"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_3s-right-node_4t-left",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_3s-right-node_4t-left"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -158.33679604062223,
-        "y" : -227.03541222886804
-      },
-      "lowerRight" : {
-        "x" : 101.7404640309411,
-        "y" : -201.67654481655637
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_4"
-    } ],
     "incoming" : [ {
       "resourceId" : "node_3"
     } ],
     "target" : {
-      "resourceId" : "node_4"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_4s-right-node_5t-left",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_4s-right-node_5t-left"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 81.7404640309411,
-        "y" : -240.96846750087843
-      },
-      "lowerRight" : {
-        "x" : 335.3870832077305,
-        "y" : -201.67654481655637
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_5"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_4"
-    } ],
-    "target" : {
-      "resourceId" : "node_5"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_5s-bottom-node_6t-top",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_5s-bottom-node_6t-top"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 315.3870832077305,
-        "y" : -240.96846750087843
-      },
-      "lowerRight" : {
-        "x" : 346.1048180323538,
-        "y" : -8.757317973335851
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_6"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_5"
-    } ],
-    "target" : {
-      "resourceId" : "node_6"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_6s-left-node_7t-right",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_6s-left-node_7t-right"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : 76.38159661862943,
-        "y" : -29.82909145579815
-      },
-      "lowerRight" : {
-        "x" : 346.1048180323538,
-        "y" : -8.757317973335851
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_7"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_6"
-    } ],
-    "target" : {
-      "resourceId" : "node_7"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_7s-left-node_8t-right",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_7s-left-node_8t-right"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -155.12147559323515,
-        "y" : -30.900864938260483
-      },
-      "lowerRight" : {
-        "x" : 96.38159661862943,
-        "y" : -9.82909145579815
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_8"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_7"
-    } ],
-    "target" : {
-      "resourceId" : "node_8"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_8s-left-node_9s-right",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_8s-left-node_9s-right"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -379.1221334278635,
-        "y" : -42.69037324534622
-      },
-      "lowerRight" : {
-        "x" : -135.12147559323515,
-        "y" : -10.900864938260483
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_9"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_8"
-    } ],
-    "target" : {
-      "resourceId" : "node_9"
-    }
-  }, {
-    "resourceId" : "reactflow__edge-node_9s-left-node_10t-right",
-    "properties" : {
-      "overrideid" : "reactflow__edge-node_9s-left-node_10t-right"
-    },
-    "stencil" : {
-      "id" : "SequenceFlow"
-    },
-    "childShapes" : [ ],
-    "bounds" : {
-      "upperLeft" : {
-        "x" : -645.9840730520398,
-        "y" : -42.69037324534622
-      },
-      "lowerRight" : {
-        "x" : -359.1221334278635,
-        "y" : -7.331505833034498
-      }
-    },
-    "dockers" : [ {
-      "x" : 15.0,
-      "y" : 15.0
-    }, {
-      "x" : 15.0,
-      "y" : 15.0
-    } ],
-    "outgoing" : [ {
-      "resourceId" : "node_10"
-    } ],
-    "incoming" : [ {
-      "resourceId" : "node_9"
-    } ],
-    "target" : {
-      "resourceId" : "node_10"
+      "resourceId" : "node_2"
     }
   } ],
   "bounds" : {

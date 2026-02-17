@@ -1,0 +1,1 @@
+this is the folder where we create the java classes for storing data in objects/instances
