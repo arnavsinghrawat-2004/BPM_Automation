@@ -2,6 +2,9 @@ package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.LoanOffers;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
+
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 
@@ -14,6 +17,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Flowable Node Name: EndLoanApplication
  */
+@WorkFlowOperation(
+    id = "EndLoanApplication",
+    description = "Finalize loan application workflow",
+    category = "loan",
+    type = DelegationType.SERVICE,
+    inputs = {"applicationId", "approvalStatus"},
+    outputs = {"status", "result"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class EndLoanApplicationTask implements JavaDelegate {
 
     @Override

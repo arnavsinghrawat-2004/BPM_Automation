@@ -2,6 +2,8 @@ package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.RequiredCustomerDetails;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.CustomerDetailsCollectionService;
 import com.iongroup.library.service.impl.CustomerCollectionServiceImpl;
 import org.flowable.bpmn.model.ExtensionElement;
@@ -17,6 +19,22 @@ import java.util.stream.Collectors;
  * BPMN extension element:
  *  <flowable:requiredFields>CUSTOMER_NAME,PAN,MONTHLY_INCOME</flowable:requiredFields>
  */
+@WorkFlowOperation(
+    id = "EnterCustomerDetails",
+    description = "Collect customer details dynamically",
+    category = "common",
+    type = DelegationType.SERVICE,
+    inputs = {"customerProfile"},
+    outputs = {"customerProfile"},
+    selectableFields = {
+        "CUSTOMER_NAME",
+        "CONTACT_NUMBER",
+        "ADDRESS",
+        "PAN",
+        "AADHAR",
+        "MONTHLY_INCOME"},
+    customizableFields = {}
+)
 public class EnterCustomerDetailsTask implements JavaDelegate {
 
     private final CustomerDetailsCollectionService collectionService;

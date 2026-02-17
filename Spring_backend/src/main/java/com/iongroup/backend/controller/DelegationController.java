@@ -1,6 +1,5 @@
 package com.iongroup.backend.controller;
 
-import com.iongroup.backend.model.DelegationResponse;
 import com.iongroup.backend.service.DelegationService;
 import com.iongroup.library.registry.DelegationType;
 import com.iongroup.library.registry.OperationDescriptor;
@@ -9,11 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
-/**
- * REST Controller for managing and retrieving delegation operations.
- * Provides endpoints to query operations by delegation type.
- */
 @RestController
 @RequestMapping("/api/delegations")
 public class DelegationController {
@@ -24,147 +20,77 @@ public class DelegationController {
         this.delegationService = delegationService;
     }
 
-    /**
-     * Example:
-     * GET /api/delegations/type/SERVICE
-     */
-    @GetMapping("/type/{type}")
-    public ResponseEntity<DelegationResponse> getDelegationsByType(
-            @PathVariable String type) {
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllDelegations() {
+        try {
+            List<OperationDescriptor> delegations = delegationService.getAllDelegations();
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Successfully retrieved all delegations",
+                    "data", delegations
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Error retrieving delegations: " + e.getMessage()
+                    ));
+        }
+    }
 
+    @GetMapping("/type/{type}")
+    public ResponseEntity<?> getDelegationsByType(@PathVariable String type) {
         try {
             DelegationType delegationType = DelegationType.valueOf(type.toUpperCase());
-
             List<OperationDescriptor> delegations = delegationService.getDelegationsByType(delegationType);
-
-            DelegationResponse response = new DelegationResponse(
-                    true,
-                    "Successfully retrieved " + delegations.size() + " delegations of type " + type,
-                    delegations);
-
-            return ResponseEntity.ok(response);
-
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Successfully retrieved " + delegations.size() + " delegations of type " + type,
+                    "data", delegations
+            ));
         } catch (IllegalArgumentException e) {
-
-            DelegationResponse response = new DelegationResponse(
-                    false,
-                    "Invalid delegation type: " + type +
-                            ". Valid types are: SERVICE, SCRIPT, USER_TASK",
-                    null,
-                    0);
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-
-        } catch (Exception e) {
-
-            DelegationResponse response = new DelegationResponse(
-                    false,
-                    "Error retrieving delegations: " + e.getMessage(),
-                    null,
-                    0);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Invalid delegation type: " + type,
+                            "validTypes", delegationService.getValidDelegationTypes()
+                    ));
         }
     }
 
-    /**
-     * GET /api/delegations/all
-     */
-    @GetMapping("/all")
-    public ResponseEntity<DelegationResponse> getAllDelegations() {
-
-        try {
-
-            List<OperationDescriptor> delegations = delegationService.getAllDelegations();
-
-            DelegationResponse response = new DelegationResponse(
-                    true,
-                    "Successfully retrieved all delegations",
-                    delegations);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-
-            DelegationResponse response = new DelegationResponse(
-                    false,
-                    "Error retrieving delegations: " + e.getMessage(),
-                    null,
-                    0);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    /**
-     * GET /api/delegations/count
-     */
     @GetMapping("/count")
-    public ResponseEntity<DelegationResponse> getDelegationCount() {
-
+    public ResponseEntity<?> getDelegationCount() {
         try {
-
             int count = delegationService.getDelegationCount();
-
-            DelegationResponse response = new DelegationResponse(
-                    true,
-                    "Total delegations count: " + count,
-                    null,
-                    count);
-
-            return ResponseEntity.ok(response);
-
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Total delegations count: " + count,
+                    "count", count
+            ));
         } catch (Exception e) {
-
-            DelegationResponse response = new DelegationResponse(
-                    false,
-                    "Error retrieving delegation count: " + e.getMessage(),
-                    null,
-                    0);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Error retrieving delegation count: " + e.getMessage()
+                    ));
         }
     }
 
-    /**
-     * GET /api/delegations/types
-     */
     @GetMapping("/types")
     public ResponseEntity<?> getValidDelegationTypes() {
-
         try {
-
-            String[] types = { "SERVICE", "SCRIPT", "USER_TASK" };
-            String[] descriptions = {
-                    "Java code interacts with other software/external systems",
-                    "Task happens in the company system only",
-                    "Task is executed on the user end"
-            };
-
-            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {
-                {
-                    put("success", true);
-                    put("message", "Valid delegation types");
-                    put("types", types);
-                    put("details", new java.util.HashMap<String, String>() {
-                        {
-                            put("SERVICE", descriptions[0]);
-                            put("SCRIPT", descriptions[1]);
-                            put("USER_TASK", descriptions[2]);
-                        }
-                    });
-                }
-            });
-
+            DelegationType[] types = delegationService.getValidDelegationTypes();
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Valid delegation types",
+                    "types", types
+            ));
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new java.util.HashMap<String, Object>() {
-                        {
-                            put("success", false);
-                            put("message", "Error retrieving delegation types: " + e.getMessage());
-                        }
-                    });
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Error retrieving delegation types: " + e.getMessage()
+                    ));
         }
     }
 }

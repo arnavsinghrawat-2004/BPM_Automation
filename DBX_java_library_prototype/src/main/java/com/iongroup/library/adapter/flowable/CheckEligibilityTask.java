@@ -2,6 +2,8 @@ package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.EligibilityResult;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.EligibilityService;
 import com.iongroup.library.service.impl.EligibilityServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -20,6 +22,16 @@ import java.util.Map;
  * 
  * Flowable Node Name: CheckEligibility
  */
+@WorkFlowOperation(
+    id = "CheckEligibility",
+    description = "Check customer eligibility for loan/card",
+    category = "loan",
+    type = DelegationType.SERVICE,
+    inputs = {"customerProfile"},
+    outputs = {"eligibilityResult"},
+    selectableFields = {},
+    customizableFields = {"AMOUNT"}
+)
 public class CheckEligibilityTask implements JavaDelegate {
 
     private EligibilityService eligibilityService;

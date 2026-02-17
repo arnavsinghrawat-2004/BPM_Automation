@@ -2,6 +2,8 @@ package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.LoanPricingPolicy;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.LoanPolicyService;
 import com.iongroup.library.service.impl.LoanPolicyServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -16,6 +18,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Flowable Node Name: GetLoanPolicy
  */
+@WorkFlowOperation(
+    id = "GetLoanPolicy",
+    description = "Fetch loan policy from external system",
+    category = "loan",
+    type = DelegationType.SERVICE,
+    inputs = {"loanType"},
+    outputs = {"loanPolicy"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class GetLoanPolicyTask implements JavaDelegate {
 
     private LoanPolicyService loanPolicyService;

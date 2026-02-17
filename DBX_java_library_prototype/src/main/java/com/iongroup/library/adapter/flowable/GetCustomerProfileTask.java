@@ -1,6 +1,8 @@
 package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.CustomerProfile;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.CustomerProfileService;
 import com.iongroup.library.service.impl.CustomerProfileServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -15,6 +17,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Flowable Node Name: GetCustomerProfile
  */
+@WorkFlowOperation(
+    id = "GetCustomerProfile",
+    description = "Get customer profile",
+    category = "common",
+    type = DelegationType.SERVICE,
+    inputs = {"customerId", "notificationType", "content"},
+    outputs = {"notificationStatus"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class GetCustomerProfileTask implements JavaDelegate {
 
     private CustomerProfileService customerProfileService;

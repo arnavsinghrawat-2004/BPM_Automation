@@ -3,6 +3,8 @@ package com.iongroup.library.adapter.flowable;
 import com.iongroup.library.domain.CardPricingPolicy;
 import com.iongroup.library.domain.CreditCardOffer;
 import com.iongroup.library.domain.CustomerProfile;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.CardOfferService;
 import com.iongroup.library.service.impl.CardOfferServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -14,6 +16,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * Output: creditCardOffer
  * Flowable Node Name: CreateCardOffer
  */
+@WorkFlowOperation(
+    id = "CreateCardOffer",
+    description = "Create credit card offer based on customer profile",
+    category = "card",
+    type = DelegationType.SERVICE,
+    inputs = {"customerProfile", "availableCards"},
+    outputs = {"cardOffer"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class CreateCardOfferTask implements JavaDelegate {
 
     private CardOfferService cardOfferService;

@@ -3,6 +3,8 @@ package com.iongroup.library.adapter.flowable;
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.LoanOffers;
 import com.iongroup.library.domain.LoanPricingPolicy;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.LoanOfferService;
 import com.iongroup.library.service.impl.LoanOfferServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -17,6 +19,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Flowable Node Name: CreateLoanOffer
  */
+@WorkFlowOperation(
+    id = "CreateLoanOffer",
+    description = "Create loan offer based on eligibility and policy",
+    category = "loan",
+    type = DelegationType.SERVICE,
+    inputs = {"eligibilityResult", "loanPolicy"},
+    outputs = {"loanOffer"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class CreateLoanOfferTask implements JavaDelegate {
 
     private LoanOfferService loanOfferService;

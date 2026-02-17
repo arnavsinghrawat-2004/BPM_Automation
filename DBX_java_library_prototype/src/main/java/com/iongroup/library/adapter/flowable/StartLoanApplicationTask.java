@@ -3,6 +3,9 @@ package com.iongroup.library.adapter.flowable;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
+
 /**
  * Delegate for "Start Loan Application" step.
  * Triggered when a customer submits a loan request.
@@ -12,6 +15,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Frontend Node Name: StartLoanApplication
  */
+@WorkFlowOperation(
+    id = "StartLoanApplication",
+    description = "Initialize loan application workflow",
+    category = "loan",
+    type = DelegationType.SERVICE,
+    inputs = {"customerId"},
+    outputs = {"applicationId", "customerProfile"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class StartLoanApplicationTask implements JavaDelegate {
 
     @Override

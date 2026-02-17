@@ -2,34 +2,31 @@ package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.exception.BusinessException;
 import com.iongroup.library.registry.OperationDescriptor;
-import com.iongroup.library.registry.OperationRegistry;
-import com.iongroup.library.registry.OperationRegistryFactory;
+import com.iongroup.library.registry.RegistryConfiguration;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
- * Universal dispatcher delegate.
- *
- * This is the ONLY delegate referenced in BPMN files.
- * It dynamically resolves and executes the actual operation
- * using the OperationRegistry.
+ * Universal dispatcher delegate for BPMN.
+ * Dynamically resolves and executes the actual operation
+ * using RegistryConfiguration.
  */
 public class OperationDispatcherDelegate implements JavaDelegate {
-
-    private static final OperationRegistry REGISTRY =
-            OperationRegistryFactory.getRegistry();
 
     @Override
     public void execute(DelegateExecution execution) {
 
-        // 1️⃣ BPMN task id == operation id
-        String operationId =
-            (String) execution.getCurrentFlowElement()
-                .getExtensionElements()
-                .get("delegationId")
-                .get(0)
-                .getElementText();
-
+        // 1️⃣ Extract operation id from BPMN task extension
+        String operationId = Optional.ofNullable(
+                execution.getCurrentFlowElement()
+                        .getExtensionElements()
+                        .get("delegationId")
+        )
+        .map(list -> list.get(0).getElementText())
+        .orElse(null);
 
         if (operationId == null || operationId.isBlank()) {
             throw new BusinessException(
@@ -38,17 +35,19 @@ public class OperationDispatcherDelegate implements JavaDelegate {
             );
         }
 
-        // 2️⃣ Lookup operation metadata
-        OperationDescriptor descriptor = REGISTRY
-                .getOperation(operationId)
+        // 2️⃣ Lookup operation metadata dynamically
+        List<OperationDescriptor> allOps = RegistryConfiguration.getAllOperations();
+        OperationDescriptor descriptor = allOps.stream()
+                .filter(op -> op.getId().equals(operationId))
+                .findFirst()
                 .orElseThrow(() -> new BusinessException(
                         "DISPATCHER_002",
                         "No operation registered with id: " + operationId
                 ));
 
-        // 3️⃣ Validate delegation type (future-proofing)
-        if (descriptor.getDelegateClass() == null ||
-            descriptor.getDelegateClass().isBlank()) {
+        // 3️⃣ Validate delegate class
+        String delegateClass = descriptor.getDelegateClass();
+        if (delegateClass == null || delegateClass.isBlank()) {
             throw new BusinessException(
                     "DISPATCHER_003",
                     "Operation " + operationId + " has no delegateClass defined"
@@ -56,25 +55,20 @@ public class OperationDispatcherDelegate implements JavaDelegate {
         }
 
         try {
-            // 4️⃣ Instantiate the real delegate
-            Class<?> clazz = Class.forName(descriptor.getDelegateClass());
-
+            // 4️⃣ Instantiate and execute delegate
+            Class<?> clazz = Class.forName(delegateClass);
             if (!JavaDelegate.class.isAssignableFrom(clazz)) {
                 throw new BusinessException(
                         "DISPATCHER_004",
-                        "Delegate class does not implement JavaDelegate: "
-                                + descriptor.getDelegateClass()
+                        "Delegate class does not implement JavaDelegate: " + delegateClass
                 );
             }
 
-            JavaDelegate realDelegate =
-                    (JavaDelegate) clazz.getDeclaredConstructor().newInstance();
-
-            // 5️⃣ Execute business logic
+            JavaDelegate realDelegate = (JavaDelegate) clazz.getDeclaredConstructor().newInstance();
             realDelegate.execute(execution);
 
         } catch (BusinessException e) {
-            throw e; // preserve business semantics
+            throw e; // preserve library-specific errors
         } catch (Exception e) {
             throw new BusinessException(
                     "DISPATCHER_005",

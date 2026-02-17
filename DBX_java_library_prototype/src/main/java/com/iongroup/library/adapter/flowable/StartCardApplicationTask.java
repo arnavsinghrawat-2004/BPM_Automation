@@ -3,12 +3,25 @@ package com.iongroup.library.adapter.flowable;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
+
 /**
  * Delegate for "Start Card Application" step.
  * Input: customerId
  * Output: applicationId
  * Flowable Node Name: StartApplication
  */
+@WorkFlowOperation(
+    id = "StartCardApplication",
+    description = "Initialize credit card application workflow",
+    category = "card",
+    type = DelegationType.SERVICE,
+    inputs = {"customerId"},
+    outputs = {"applicationId", "customerProfile"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class StartCardApplicationTask implements JavaDelegate {
 
     @Override

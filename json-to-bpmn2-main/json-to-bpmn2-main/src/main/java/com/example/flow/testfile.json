@@ -1,11 +1,11 @@
 {
   "nodes": [
     {
-      "id": "node_0",
+      "id": "node_2",
       "type": "flowNode",
       "position": {
-        "x": -319.5,
-        "y": 93.04544830322266
+        "x": -287.9685936894743,
+        "y": -25.4937164490765
       },
       "data": {
         "label": "start",
@@ -16,53 +16,8 @@
       "height": 100,
       "selected": false,
       "positionAbsolute": {
-        "x": -319.5,
-        "y": 93.04544830322266
-      },
-      "dragging": false
-    },
-    {
-      "id": "node_1",
-      "type": "flowNode",
-      "position": {
-        "x": -165.75,
-        "y": 99.56817245483398
-      },
-      "data": {
-        "label": "Service",
-        "nodeType": "service",
-        "description": "",
-        "delegationId": "EnterCustomerDetails",
-        "delegationName": "EnterCustomerDetails",
-        "delegationType": "SERVICE"
-      },
-      "width": 160,
-      "height": 80,
-      "selected": false,
-      "dragging": false,
-      "positionAbsolute": {
-        "x": -165.75,
-        "y": 99.56817245483398
-      }
-    },
-    {
-      "id": "node_2",
-      "type": "flowNode",
-      "position": {
-        "x": 244.75,
-        "y": 89.06817245483398
-      },
-      "data": {
-        "label": "end",
-        "nodeType": "end",
-        "description": ""
-      },
-      "width": 100,
-      "height": 100,
-      "selected": false,
-      "positionAbsolute": {
-        "x": 244.75,
-        "y": 89.06817245483398
+        "x": -287.9685936894743,
+        "y": -25.4937164490765
       },
       "dragging": false
     },
@@ -70,8 +25,90 @@
       "id": "node_3",
       "type": "flowNode",
       "position": {
-        "x": 37.25,
-        "y": 97.56817245483398
+        "x": -142.80850126627226,
+        "y": -89.20468781635707
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "EnterCustomerDetails",
+        "delegationName": "EnterCustomerDetails",
+        "delegationType": "SERVICE",
+        "selectedFields": [
+          "CUSTOMER_NAME",
+          "CONTACT_NUMBER",
+          "ADDRESS",
+          "MONTHLY_INCOME",
+          "PAN"
+        ]
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": -142.80850126627226,
+        "y": -89.20468781635707
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_4",
+      "type": "flowNode",
+      "position": {
+        "x": 70.11310800583396,
+        "y": -107.37638045407706
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "StartLoanApplication",
+        "delegationName": "StartLoanApplication",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 70.11310800583396,
+        "y": -107.37638045407706
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_5",
+      "type": "flowNode",
+      "position": {
+        "x": -142.0857629532463,
+        "y": 85.50247238982666
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "CheckEligibility",
+        "delegationName": "CheckEligibility",
+        "delegationType": "SERVICE",
+        "customFields": {
+          "AMOUNT": "1000"
+        }
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": -142.0857629532463,
+        "y": 85.50247238982666
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_6",
+      "type": "flowNode",
+      "position": {
+        "x": 260.63647516609745,
+        "y": -89.11469687394535
       },
       "data": {
         "label": "Service",
@@ -83,28 +120,154 @@
       },
       "width": 160,
       "height": 80,
-      "selected": true,
-      "dragging": false,
+      "selected": false,
       "positionAbsolute": {
-        "x": 37.25,
-        "y": 97.56817245483398
-      }
+        "x": 260.63647516609745,
+        "y": -89.11469687394535
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_7",
+      "type": "flowNode",
+      "position": {
+        "x": 77.05477347078914,
+        "y": 85.07274060184434
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "GetLoanPolicy",
+        "delegationName": "GetLoanPolicy",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 77.05477347078914,
+        "y": 85.07274060184434
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_8",
+      "type": "flowNode",
+      "position": {
+        "x": 300.4606379048258,
+        "y": 70.31178626829364
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "CreateLoanOffer",
+        "delegationName": "CreateLoanOffer",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 300.4606379048258,
+        "y": 70.31178626829364
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_9",
+      "type": "flowNode",
+      "position": {
+        "x": -250.06206233052794,
+        "y": 226.90923280167164
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "CustomerApproval",
+        "delegationName": "CustomerApproval",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_10",
+      "type": "flowNode",
+      "position": {
+        "x": -31.21469916276368,
+        "y": 246.36233174991733
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "NotifyCustomer",
+        "delegationName": "NotifyCustomer",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": -31.21469916276368,
+        "y": 246.36233174991733
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_11",
+      "type": "flowNode",
+      "position": {
+        "x": 230.42948169114123,
+        "y": 260.95215596110165
+      },
+      "data": {
+        "label": "Service",
+        "nodeType": "service",
+        "description": "",
+        "delegationId": "EndLoanApplication",
+        "delegationName": "EndLoanApplication",
+        "delegationType": "SERVICE"
+      },
+      "width": 160,
+      "height": 80,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 230.42948169114123,
+        "y": 260.95215596110165
+      },
+      "dragging": false
+    },
+    {
+      "id": "node_13",
+      "type": "flowNode",
+      "position": {
+        "x": 53.21175027262262,
+        "y": 483.69013891851506
+      },
+      "data": {
+        "label": "end",
+        "nodeType": "end",
+        "description": ""
+      },
+      "width": 100,
+      "height": 100,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 53.21175027262262,
+        "y": 483.69013891851506
+      },
+      "dragging": false
     }
   ],
   "edges": [
     {
-      "source": "node_0",
-      "sourceHandle": "s-right",
-      "target": "node_1",
-      "targetHandle": "t-left",
-      "animated": true,
-      "style": {
-        "stroke": "hsl(var(--muted-foreground))"
-      },
-      "id": "reactflow__edge-node_0s-right-node_1t-left"
-    },
-    {
-      "source": "node_1",
+      "source": "node_2",
       "sourceHandle": "s-right",
       "target": "node_3",
       "targetHandle": "t-left",
@@ -112,23 +275,111 @@
       "style": {
         "stroke": "hsl(var(--muted-foreground))"
       },
-      "id": "reactflow__edge-node_1s-right-node_3t-left"
+      "id": "reactflow__edge-node_2s-right-node_3t-left"
     },
     {
       "source": "node_3",
       "sourceHandle": "s-right",
-      "target": "node_2",
+      "target": "node_4",
       "targetHandle": "s-left",
       "animated": true,
       "style": {
         "stroke": "hsl(var(--muted-foreground))"
       },
-      "id": "reactflow__edge-node_3s-right-node_2s-left"
+      "id": "reactflow__edge-node_3s-right-node_4s-left"
+    },
+    {
+      "source": "node_4",
+      "sourceHandle": "s-right",
+      "target": "node_6",
+      "targetHandle": "t-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_4s-right-node_6t-left"
+    },
+    {
+      "source": "node_6",
+      "sourceHandle": "s-right",
+      "target": "node_5",
+      "targetHandle": "t-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_6s-right-node_5t-left"
+    },
+    {
+      "source": "node_5",
+      "sourceHandle": "s-right",
+      "target": "node_7",
+      "targetHandle": "t-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_5s-right-node_7t-left"
+    },
+    {
+      "source": "node_7",
+      "sourceHandle": "s-right",
+      "target": "node_8",
+      "targetHandle": "s-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_7s-right-node_8s-left"
+    },
+    {
+      "source": "node_8",
+      "sourceHandle": "s-right",
+      "target": "node_9",
+      "targetHandle": "t-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_8s-right-node_9t-left"
+    },
+    {
+      "source": "node_9",
+      "sourceHandle": "s-right",
+      "target": "node_10",
+      "targetHandle": "t-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_9s-right-node_10t-left"
+    },
+    {
+      "source": "node_10",
+      "sourceHandle": "s-right",
+      "target": "node_11",
+      "targetHandle": "s-left",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_10s-right-node_11s-left"
+    },
+    {
+      "source": "node_13",
+      "sourceHandle": "s-left",
+      "target": "node_11",
+      "targetHandle": "s-right",
+      "animated": true,
+      "style": {
+        "stroke": "hsl(var(--muted-foreground))"
+      },
+      "id": "reactflow__edge-node_13s-left-node_11s-right"
     }
   ],
   "viewport": {
-    "x": 756.5,
-    "y": 15.409103393554688,
-    "zoom": 2
+    "x": 290.29226380414696,
+    "y": 196.11148188656009,
+    "zoom": 1.0281138266560663
   }
 }

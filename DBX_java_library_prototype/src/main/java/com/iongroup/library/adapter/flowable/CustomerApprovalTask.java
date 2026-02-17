@@ -1,6 +1,8 @@
 package com.iongroup.library.adapter.flowable;
 
 import com.iongroup.library.domain.LoanOffers;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.ApprovalService;
 import com.iongroup.library.service.impl.ApprovalServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -16,6 +18,16 @@ import org.flowable.engine.delegate.JavaDelegate;
  * 
  * Flowable Node Name: CustomerApproval
  */
+@WorkFlowOperation(
+    id = "CustomerApproval",
+    description = "Customer approval for loan/card offer",
+    category = "common",
+    type = DelegationType.SERVICE,
+    inputs = {"offer", "customerId"},
+    outputs = {"approvalStatus", "approvalTimestamp"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class CustomerApprovalTask implements JavaDelegate {
 
     private ApprovalService approvalService;

@@ -3,6 +3,8 @@ package com.iongroup.library.adapter.flowable;
 import com.iongroup.library.domain.CreditCardOffer;
 import com.iongroup.library.domain.CustomerProfile;
 import com.iongroup.library.domain.EligibilityResult;
+import com.iongroup.library.registry.DelegationType;
+import com.iongroup.library.registry.WorkFlowOperation;
 import com.iongroup.library.service.CardOfferService;
 import com.iongroup.library.service.impl.CardOfferServiceImpl;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -16,6 +18,17 @@ import java.util.List;
  * Output: availableCardOffers
  * Flowable Node Name: GetAvailableCreditCards
  */
+
+@WorkFlowOperation(
+    id = "GetAvailableCreditCards",
+    description = "Fetch available credit cards from catalog",
+    category = "card",
+    type = DelegationType.SERVICE,
+    inputs = {"customerSegment"},
+    outputs = {"availableCards"},
+    selectableFields = {},
+    customizableFields = {}
+)
 public class GetAvailableCreditCardsTask implements JavaDelegate {
 
     private CardOfferService cardOfferService;
