@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>json2bpmn2</artifactId>
+  <version>1.0.0</version>
+  <name>Flowable JSON to BPMN2 Converter</name>
+
+  <properties>
+    <!-- Flowable JSON converter is published up to 6.8.1 -->
+    <flowable.version>6.8.1</flowable.version>
+
+    <!-- Java toolchain -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+  <!-- Keep all downloads to Maven Central -->
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
+
+  <!-- Use Jackson BOM so all jackson-* modules are aligned -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>2.17.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Flowable engine for runtime execution (brings Liquibase transitively) -->
+    <dependency>
+      <groupId>org.flowable</groupId>
+      <artifactId>flowable-engine</artifactId>
+      <version>6.8.1</version>
+    </dependency>
+
+    <!-- H2 in-memory DB for quick demo runs -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.2.224</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Flowable: BPMN XML converter -->
+    <dependency>
+      <groupId>org.flowable</groupId>
+      <artifactId>flowable-bpmn-converter</artifactId>
+      <version>${flowable.version}</version>
+    </dependency>
+
+    <!-- Flowable: JSON -> BpmnModel (contains BpmnJsonConverter) -->
+    <dependency>
+      <groupId>org.flowable</groupId>
+      <artifactId>flowable-json-converter</artifactId>
+      <version>${flowable.version}</version>
+    </dependency>
+
+    <!-- Jackson modules (versions come from the BOM above) -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+
+    <!-- Add SnakeYAML so Liquibase initialization won't fail -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>2.2</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- (Optional) Exec plugin so `mvn exec:java` is easy on PowerShell -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <mainClass>com.example.RunFlowableProcess</mainClass>
+        </configuration>
+      </plugin>
+
+      <!-- Java compiler -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <release>${maven.compiler.target}</release>
+        </configuration>
+      </plugin>
+
+      <!-- ✅ Shade plugin: create a runnable "fat JAR" with dependencies -->
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.example.flow.UiToFlowableConverter</mainClass>
+                </transformer>
+              </transformers>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> 
+
+    </plugins>
+  </build>
+</project>

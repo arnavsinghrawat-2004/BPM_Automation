@@ -1,0 +1,50 @@
+{
+  "process": {
+    "process_id": "ComplexProcess",
+    "name": "Complex Process Example (Converted)",
+    "process_namespace": "http://flowable.org/test"
+  },
+  "nodeTypeMap": {
+    "service": {
+      "stencil": "ServiceTask",
+      "properties": {
+        "name": "Service Call",
+        "resultvariable": "serviceOutput"
+      }
+    },
+    "script": {
+      "stencil": "ScriptTask",
+      "properties": {
+        "name": "Transform Payload",
+        "scriptformat": "groovy",
+        "script": "execution.setVariable('payload', payloadTransformer(execution));"
+      }
+    },
+    "user": {
+      "stencil": "UserTask",
+      "properties": {
+        "name": "Manual Review",
+        "assignee": "qa.user",
+        "candidateGroups": "qa",
+        "priority": "75"
+      }
+    }
+  },
+  "nodeOverrides": {
+    "node_7": {
+      "properties": {
+        "name": "Finalize Script",
+        "scriptformat": "javascript",
+        "script": "execution.setVariable('final', true);"
+      }
+    }
+  },
+  "flowOverrides": {
+    "reactflow__edge-node_7s-right-node_8s-left": {
+      "properties": {
+        "conditionsequenceflow": "${serviceOutput != null && serviceOutput.status == 'OK'}"
+      }
+    }
+  },
+  "flowBoundsPadding": 10
+}
