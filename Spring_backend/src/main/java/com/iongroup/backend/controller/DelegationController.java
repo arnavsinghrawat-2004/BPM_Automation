@@ -80,7 +80,8 @@ public class DelegationController {
     }
 
     @GetMapping("/type/{type}")
-    public ResponseEntity<?> getDelegationsByType(@PathVariable String type) {
+    public ResponseEntity<?> getDelegationsByType(@PathVariable("type") String type) {
+
         try {
             DelegationType delegationType = DelegationType.valueOf(type.toUpperCase());
             List<OperationDescriptor> delegations = delegationService.getDelegationsByType(delegationType);
