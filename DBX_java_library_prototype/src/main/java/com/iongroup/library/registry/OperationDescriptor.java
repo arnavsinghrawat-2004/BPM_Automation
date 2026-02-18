@@ -73,7 +73,8 @@ public class OperationDescriptor {
     }
 
     public OperationDescriptor(String id, String description, List<String> inputs, List<String> outputs,
-            String delegateClass, String category, DelegationType delegationType, List<String> selectableFields, List<String> customizableFields) {
+            String delegateClass, String category, DelegationType delegationType, List<String> selectableFields,
+            List<String> customizableFields) {
         this.id = id;
         this.description = description;
         this.inputs = inputs;

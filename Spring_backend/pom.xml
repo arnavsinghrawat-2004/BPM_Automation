@@ -29,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<flowable.version>6.8.1</flowable.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -74,6 +75,25 @@
 			<artifactId>json2bpmn2</artifactId>
 			<version>1.0.0</version>
 		</dependency> -->
+
+		<dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-engine</artifactId>
+            <version>${flowable.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+		<dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-bpmn-converter</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-json-converter</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
 
 
 	</dependencies>
