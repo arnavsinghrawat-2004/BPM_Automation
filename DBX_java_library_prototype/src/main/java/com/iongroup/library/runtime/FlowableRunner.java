@@ -25,7 +25,7 @@ public class FlowableRunner {
 
         // 1️⃣ Deploy BPMN
         repositoryService.createDeployment()
-            .addClasspathResource("processes/newTrial.bpmn20.xml")
+            .addClasspathResource("processes/newTrial1.bpmn20.xml")
             .deploy();
 
         System.out.println("✅ BPMN deployed");

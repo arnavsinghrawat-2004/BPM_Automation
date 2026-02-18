@@ -1,32 +1,26 @@
 package com.iongroup.backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iongroup.backend.model.FlowableConversionResponse;
-import com.iongroup.library.flow.UiJsonToBpmnConverter;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.iongroup.backend.model.FlowableConversionResponse;
+import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade;
+import com.iongroup.json2bpmn2.ConversionResult;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
- 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-/**
- * REST Controller for converting UI flow graphs to BPMN and executing them
- */
 @RestController
-@RequestMapping("/api/flowable")
+@RequestMapping("/api/convert")
 public class FlowableConversionController {
 
-    private static final Logger logger = LoggerFactory.getLogger(FlowableConversionController.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @PostMapping(
+        value = "/ui-to-bpmn",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public FlowableConversionResponse convertUiJsonToBpmn(
+            @RequestBody JsonNode uiJson) {
+
+        // 🔹 Single call into jsontobpmn2 (black box)
+        ConversionResult result = UiJsonToBpmn2Facade.convert(uiJson);
 
     /**
      * Endpoint to convert UI JSON graph to BPMN and execute it

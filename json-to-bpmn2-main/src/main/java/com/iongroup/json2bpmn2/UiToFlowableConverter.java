@@ -1,4 +1,4 @@
-package com.iongroup.library.flow;
+package com.iongroup.json2bpmn2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
@@ -9,9 +9,22 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * DBX internal UI -> Flowable editor JSON converter (mirror of existing logic)
+ * Convert a React-Flow-style UI graph JSON into a Flowable Modeler BPMN editor JSON.
+ *
+ * Features:
+ * - Configurable node-type mappings to Flowable stencils and default properties.
+ * - Auto-detection of Parallel Split vs Parallel Join via in/out degrees.
+ * - Proper wiring of incoming/outgoing/target on nodes and sequence flows.
+ * - Position/size -> bounds conversion.
+ * - Hooks to add variables, function paths, service/script expressions, conditions, etc.
+ *
+ * CLI:
+ *   java -cp target/yourjar.jar com.example.flow.UiToFlowableConverter \
+ *     --in ui_graph.json --out flowable.json \
+ *     --config config.json \
+ *     --processId MyProcess --processName "My Process" --namespace "http://flowable.org/test"
  */
-public class UiToFlowableConverterDBX {
+public class UiToFlowableConverter {
 
     private static final ObjectMapper M = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -23,6 +36,32 @@ public class UiToFlowableConverterDBX {
         }
     }
 
+
+    public static void main(String[] args) throws IOException {
+        Map<String, String> cli = parseArgs(args);
+        if (!cli.containsKey("in") || !cli.containsKey("out")) {
+            System.err.println("Usage: --in <ui.json> --out <flowable.json> [--config cfg.json] " +
+                    "[--processId id] [--processName name] [--namespace ns]");
+            System.exit(2);
+        }
+
+        JsonNode ui = M.readTree(new File(cli.get("in")));
+
+        ConverterConfig cfg = ConverterConfig.defaultConfig();
+
+        if (cli.containsKey("config")) {
+            JsonNode cfgNode = M.readTree(new File(cli.get("config")));
+            cfg.applyFromJson(cfgNode);
+        }
+        if (cli.containsKey("processId")) cfg.process.processId = cli.get("processId");
+        if (cli.containsKey("processName")) cfg.process.name = cli.get("processName");
+        if (cli.containsKey("namespace")) cfg.process.namespace = cli.get("namespace");
+
+        ObjectNode flowable = convert(ui, cfg);
+        M.writerWithDefaultPrettyPrinter().writeValue(new File(cli.get("out")), flowable);
+        System.out.println("✅ Wrote Flowable JSON to " + cli.get("out"));
+    }
+
     // -------------------------------
     // Core conversion
     // -------------------------------
@@ -31,6 +70,7 @@ public class UiToFlowableConverterDBX {
         ArrayNode uiNodes = arrayOrEmpty(uiJson.get("nodes"));
         ArrayNode uiEdges = arrayOrEmpty(uiJson.get("edges"));
 
+        // Build adjacency (for split/join inference)
         Map<String, List<JsonNode>> outEdgesByNode = new HashMap<>();
         Map<String, List<JsonNode>> inEdgesByNode = new HashMap<>();
 
@@ -41,6 +81,7 @@ public class UiToFlowableConverterDBX {
             if (t != null) inEdgesByNode.computeIfAbsent(t, k -> new ArrayList<>()).add(e);
         }
 
+        // Build node shapes
         Map<String, ObjectNode> idToShape = new LinkedHashMap<>();
         List<String> orderedNodeIds = new ArrayList<>();
 
@@ -65,10 +106,16 @@ public class UiToFlowableConverterDBX {
             ObjectNode properties = M.createObjectNode();
             properties.setAll(mapping.properties);
 
+            // -------------------------------------------------
+            // Core metadata (ALL task types)
+            // -------------------------------------------------
             copyIfPresent(data, properties, "delegationId");
             copyIfPresent(data, properties, "delegationName");
             copyIfPresent(data, properties, "delegationType");
 
+            // -------------------------------------------------
+            // UserTask-specific fields
+            // -------------------------------------------------
             if ("user".equalsIgnoreCase(nodeType)) {
                 JsonNode selected = data.get("selectedFields");
                 if (selected != null && selected.isArray() && selected.size() > 0) {
@@ -78,27 +125,40 @@ public class UiToFlowableConverterDBX {
                 }
             }
 
+            // -------------------------------------------------
+            //  customFields (design-time parameters like AMOUNT)
+            // -------------------------------------------------
+            //  customFields (design-time parameters)
             JsonNode customFields = data.get("customFields");
             if (customFields != null && customFields.isObject()) {
                 Iterator<Map.Entry<String, JsonNode>> it = customFields.fields();
                 while (it.hasNext()) {
                     Map.Entry<String, JsonNode> e = it.next();
+
                     String uiKey = e.getKey();
                     String value = e.getValue().asText();
+
+                    // 🔁 UI → Flowable name mapping
                     String flowableKey;
                     if ("AMOUNT".equals(uiKey)) {
                         flowableKey = "requestedAmountLimit";
                     } else {
                         flowableKey = uiKey;
                     }
+
                     properties.put(flowableKey, value);
                 }
             }
 
-            if (properties.get("name") == null && !"start".equalsIgnoreCase(nodeType) && !"end".equalsIgnoreCase(nodeType)) {
+
+            // Default name
+            if (properties.get("name") == null &&
+                !"start".equalsIgnoreCase(nodeType) &&
+                !"end".equalsIgnoreCase(nodeType)) {
                 properties.put("name", label);
             }
 
+            // Parallel gateway naming
             if ("parallel".equalsIgnoreCase(nodeType)) {
                 int indeg = inEdgesByNode.getOrDefault(origId, Collections.emptyList()).size();
                 int outdeg = outEdgesByNode.getOrDefault(origId, Collections.emptyList()).size();
@@ -109,10 +169,12 @@ public class UiToFlowableConverterDBX {
                 }
             }
 
+            // Per-node overrides
             if (cfg.nodeOverrides.containsKey(origId)) {
                 deepMerge(properties, cfg.nodeOverrides.get(origId));
             }
 
+            // Bounds
             Bounds b = boundsFromUi(n);
             ObjectNode bounds = M.createObjectNode();
             bounds.set("upperLeft", point(b.ulx, b.uly));
@@ -133,9 +195,13 @@ public class UiToFlowableConverterDBX {
             orderedNodeIds.add(origId);
         }
 
+        // -------------------------------------------------
+        // Sequence Flows
+        // -------------------------------------------------
         List<ObjectNode> flowShapes = new ArrayList<>();
 
         for (JsonNode e : uiEdges) {
+
             String eid = text(e, "id");
             String sourceId = text(e, "source");
             String targetId = text(e, "target");
@@ -145,7 +211,9 @@ public class UiToFlowableConverterDBX {
             ObjectNode tgtShape = idToShape.get(targetId);
             if (srcShape == null || tgtShape == null) continue;
 
-            String flowRid = sanitize(eid != null ? eid : "flow_" + sourceId + "__" + targetId);
+            String flowRid = sanitize(
+                eid != null ? eid : "flow_" + sourceId + "__" + targetId
+            );
 
             double[] sc = centerOfBounds(srcShape.path("bounds"));
             double[] tc = centerOfBounds(tgtShape.path("bounds"));
@@ -179,6 +247,9 @@ public class UiToFlowableConverterDBX {
             flowShapes.add(flowShape);
         }
 
+        // -------------------------------------------------
+        // Canvas
+        // -------------------------------------------------
         ObjectNode canvas = M.createObjectNode();
         canvas.put("resourceId", "canvas");
         canvas.set("stencil", obj("id", "BPMNDiagram"));
@@ -207,6 +278,7 @@ public class UiToFlowableConverterDBX {
         return canvas;
     }
 
+
     // -------------------------------
     // Config types & utilities
     // -------------------------------
@@ -222,6 +294,7 @@ public class UiToFlowableConverterDBX {
             ConverterConfig c = new ConverterConfig();
             c.process = new ProcessConfig("ConvertedProcess", "Converted Process", "http://flowable.org/test");
 
+            // Default node type map
             c.nodeTypeMap.put("start", NodeTypeConfig.of("StartNoneEvent", obj("overrideid", "startEvent")));
             c.nodeTypeMap.put("end", NodeTypeConfig.of("EndNoneEvent", obj("overrideid", "endEvent")));
             c.nodeTypeMap.put("script", NodeTypeConfig.of("ScriptTask", obj(
@@ -246,11 +319,12 @@ public class UiToFlowableConverterDBX {
                     "priority", "50"
             )));
             c.nodeTypeMap.put("parallel", NodeTypeConfig.of("ParallelGateway", obj(
-                    "name", ""
+                    "name", "" // will be filled with Split/Join
             )));
             return c;
         }
 
+        /** Load/merge from JSON (shallow for maps; deep for node/flow overrides) */
         public void applyFromJson(JsonNode root) {
             if (root == null || root.isMissingNode()) return;
             JsonNode p = root.get("process");
@@ -260,6 +334,7 @@ public class UiToFlowableConverterDBX {
                 this.process.namespace = textOrDefault(p, "process_namespace", this.process.namespace);
             }
 
+            // nodeTypeMap overrides
             if (root.has("nodeTypeMap")) {
                 JsonNode ntm = root.get("nodeTypeMap");
                 Iterator<String> it = ntm.fieldNames();
@@ -270,11 +345,13 @@ public class UiToFlowableConverterDBX {
                     ObjectNode props = spec.has("properties") && spec.get("properties").isObject()
                             ? (ObjectNode) spec.get("properties") : M.createObjectNode();
                     if (stencil != null) {
-                        this.nodeTypeMap.put(key.toLowerCase(Locale.ROOT), NodeTypeConfig.of(stencil, props));
+                        this.nodeTypeMap.put(key.toLowerCase(Locale.ROOT),
+                                NodeTypeConfig.of(stencil, props));
                     }
                 }
             }
 
+            // nodeOverrides
             if (root.has("nodeOverrides")) {
                 JsonNode no = root.get("nodeOverrides");
                 Iterator<String> it = no.fieldNames();
@@ -287,6 +364,7 @@ public class UiToFlowableConverterDBX {
                 }
             }
 
+            // flowOverrides
             if (root.has("flowOverrides")) {
                 JsonNode fo = root.get("flowOverrides");
                 Iterator<String> it = fo.fieldNames();
@@ -331,7 +409,16 @@ public class UiToFlowableConverterDBX {
         }
     }
 
-    static class Bounds { double ulx, uly, lrx, lry; Bounds(double ulx, double uly, double lrx, double lry) { this.ulx = ulx; this.uly = uly; this.lrx = lrx; this.lry = lry; }}
+    // -------------------------------
+    // Helpers
+    // -------------------------------
+
+    static class Bounds {
+        double ulx, uly, lrx, lry;
+        Bounds(double ulx, double uly, double lrx, double lry) {
+            this.ulx = ulx; this.uly = uly; this.lrx = lrx; this.lry = lry;
+        }
+    }
 
     private static Bounds boundsFromUi(JsonNode n) {
         JsonNode pos = n.has("positionAbsolute") ? n.get("positionAbsolute") : n.get("position");
@@ -395,9 +482,14 @@ public class UiToFlowableConverterDBX {
         return (n != null && n.isArray()) ? (ArrayNode) n : M.createArrayNode();
     }
 
-    private static String nvl(String s) { return s == null ? "" : s; }
+    private static String nvl(String s) {
+        return s == null ? "" : s;
+    }
 
-    private static String capitalize(String s) { if (s == null || s.isEmpty()) return s; return Character.toUpperCase(s.charAt(0)) + s.substring(1); }
+    private static String capitalize(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
 
     private static String sanitize(String id) {
         if (id == null) return "id";
@@ -409,6 +501,7 @@ public class UiToFlowableConverterDBX {
         return sb.toString();
     }
 
+    /** Deep merge b into a (ObjectNode only) */
     private static void deepMerge(ObjectNode a, ObjectNode b) {
         Iterator<Map.Entry<String, JsonNode>> fields = b.fields();
         while (fields.hasNext()) {
@@ -423,7 +516,11 @@ public class UiToFlowableConverterDBX {
         }
     }
 
-    private static Map<String, String> mapOf(String k, String v) { Map<String, String> m = new LinkedHashMap<>(); m.put(k, v); return m; }
+    private static Map<String, String> mapOf(String k, String v) {
+        Map<String, String> m = new LinkedHashMap<>();
+        m.put(k, v);
+        return m;
+    }
 
     private static Map<String, String> parseArgs(String[] args) {
         Map<String, String> m = new HashMap<>();

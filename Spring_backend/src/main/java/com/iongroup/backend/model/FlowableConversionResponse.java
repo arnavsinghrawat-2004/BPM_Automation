@@ -2,6 +2,7 @@ package com.iongroup.backend.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
 
 /**
@@ -16,16 +17,30 @@ public class FlowableConversionResponse {
 
     public FlowableConversionResponse() {}
 
-    public FlowableConversionResponse(boolean success, String message, String bpmnXml, 
-                                      ObjectNode flowableJsonNode, Map<String, Object> executionResult) {
-        this.success = success;
-        this.message = message;
+    // public FlowableConversionResponse(boolean success, String message, String bpmnXml, 
+    //                                   ObjectNode flowableJsonNode, Map<String, Object> executionResult) {
+    //     this.success = success;
+    //     this.message = message;
+    //     this.bpmnXml = bpmnXml;
+    //     // Convert ObjectNode to Map for proper JSON serialization
+    //     ObjectMapper mapper = new ObjectMapper();
+    //     this.flowableJson = mapper.convertValue(flowableJsonNode, Map.class);
+    //     this.executionResult = executionResult;
+    // }
+    public FlowableConversionResponse(
+            JsonNode flowableJsonNode,
+            String bpmnXml
+    ) {
+        this.success = true;
+        this.message = "Conversion successful";
         this.bpmnXml = bpmnXml;
-        // Convert ObjectNode to Map for proper JSON serialization
+
         ObjectMapper mapper = new ObjectMapper();
         this.flowableJson = mapper.convertValue(flowableJsonNode, Map.class);
-        this.executionResult = executionResult;
+
+        this.executionResult = null;
     }
+
 
     public boolean isSuccess() {
         return success;
