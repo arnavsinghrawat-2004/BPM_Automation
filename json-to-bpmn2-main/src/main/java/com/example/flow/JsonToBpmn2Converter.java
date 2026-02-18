@@ -3,14 +3,7 @@ package com.example.flow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.BaseElement;
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.ServiceTask;
-import org.flowable.bpmn.model.UserTask;
-import org.flowable.bpmn.model.ExtensionElement;
-import org.flowable.bpmn.model.Process;
-
+import org.flowable.bpmn.model.*;
 import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 
 import java.nio.charset.StandardCharsets;
@@ -19,15 +12,20 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Converts a Flowable Modeler JSON file to a BPMN 2.0 XML file
- * and enriches tasks with dispatcher + metadata.
+ * Converts UI JSON → Flowable BPMN 2.0 (.bpmn20.xml)
+ * Fully controlled conversion (NO Flowable defaults leaking in).
  */
 public class JsonToBpmn2Converter {
 
+    private static final String PROCESS_ID = "ComplexProcess";
+    private static final String PROCESS_NAME = "Complex Loan Process";
+
     private static final String DISPATCHER_CLASS =
         "com.iongroup.library.adapter.flowable.OperationDispatcherDelegate";
-    // ------------------------------------------------------------------------
-    // PUBLIC API for programmatic use (Spring, tests, etc.)
+
+    /* ====================================================================== */
+    /*  PUBLIC API (used by Spring backend)                                   */
+    /* ====================================================================== */
 
     public static BpmnModel convertAndEnrich(JsonNode editorRoot) {
 
@@ -38,11 +36,19 @@ public class JsonToBpmn2Converter {
             throw new IllegalStateException("No BPMN processes generated from JSON");
         }
 
-        // 🔧 reuse existing logic (NO DUPLICATION)
+        // 🔒 Force main process identity (Flowable otherwise injects defaults)
+        org.flowable.bpmn.model.Process main = model.getMainProcess();
+        main.setId(PROCESS_ID);
+        main.setName(PROCESS_NAME);
+
         enrichTasks(editorRoot, model);
 
         return model;
     }
+
+    /* ====================================================================== */
+    /*  CLI entry point (optional)                                             */
+    /* ====================================================================== */
 
     public static void main(String[] args) throws Exception {
 
@@ -63,20 +69,12 @@ public class JsonToBpmn2Converter {
             ? Path.of(args[1])
             : in.resolveSibling(stripExtension(in.getFileName().toString()) + ".bpmn20.xml");
 
-        String json = Files.readString(in, StandardCharsets.UTF_8);
-
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode editorRoot = mapper.readTree(json);
+        JsonNode editorRoot = mapper.readTree(
+            Files.readString(in, StandardCharsets.UTF_8)
+        );
 
-        BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
-        BpmnModel model = jsonConverter.convertToBpmnModel(editorRoot);
-
-        if (model == null || model.getProcesses().isEmpty()) {
-            throw new IllegalStateException("No BPMN processes generated from JSON");
-        }
-
-        // 🔧 ENRICH MODEL
-        enrichTasks(editorRoot, model);
+        BpmnModel model = convertAndEnrich(editorRoot);
 
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
         byte[] xml = xmlConverter.convertToXML(model);
@@ -87,7 +85,9 @@ public class JsonToBpmn2Converter {
         System.out.println("✔ BPMN generated: " + out.toAbsolutePath());
     }
 
-    // ------------------------------------------------------------------------
+    /* ====================================================================== */
+    /*  TASK ENRICHMENT                                                        */
+    /* ====================================================================== */
 
     private static void enrichTasks(JsonNode editorRoot, BpmnModel model) {
 
@@ -99,10 +99,11 @@ public class JsonToBpmn2Converter {
             "delegationId",
             "delegationType",
             "selectedFields",
-            "requiredFields"
+            "requiredFields",
+            "customFields"
         );
 
-        for (Process process : model.getProcesses()) {
+        for (org.flowable.bpmn.model.Process process : model.getProcesses()) {
             for (FlowElement fe : process.getFlowElements()) {
 
                 JsonNode props = idToProps.get(fe.getId());
@@ -111,7 +112,8 @@ public class JsonToBpmn2Converter {
                 String label = text(props.get("name"));
                 String delegationId = text(props.get("delegationId"));
 
-                // ================= SERVICE TASK =================
+                /* ===================== SERVICE TASK ===================== */
+
                 if (fe instanceof ServiceTask st) {
 
                     st.setImplementationType("class");
@@ -121,44 +123,48 @@ public class JsonToBpmn2Converter {
 
                     addExt(st, "delegationId", delegationId);
                     addExt(st, "delegationType", text(props.get("delegationType")));
-                    addExt(st, "selectedFields", text(props.get("selectedFields")));
-                    addExt(st, "requiredFields", text(props.get("requiredFields")));
+                    addExt(st, "selectedFields", stringify(props.get("selectedFields")));
+                    addExt(st, "requiredFields", stringify(props.get("requiredFields")));
 
-                    // 🔥 Copy ALL custom parameters (AMOUNT, etc.)
-                    Iterator<String> it = props.fieldNames();
-                    while (it.hasNext()) {
-                        String key = it.next();
+                    // 🔥 Flatten customFields { AMOUNT: 1000 }
+                    JsonNode customFields = props.get("customFields");
+                    if (customFields != null && customFields.isObject()) {
+                        customFields.fieldNames().forEachRemaining(k ->
+                            addExt(st, k, text(customFields.get(k)))
+                        );
+                    }
+
+                    // Copy any remaining simple properties
+                    props.fieldNames().forEachRemaining(key -> {
                         if (!reservedKeys.contains(key)) {
                             addExt(st, key, text(props.get(key)));
                         }
-                    }
+                    });
                 }
 
-                // ================= USER TASK =================
+                /* ======================= USER TASK ======================= */
+
                 else if (fe instanceof UserTask ut) {
 
                     if (label != null) ut.setName(label);
 
                     addExt(ut, "delegationId", delegationId);
-                    addExt(ut, "selectedFields", text(props.get("selectedFields")));
-                    addExt(ut, "requiredFields", text(props.get("requiredFields")));
+                    addExt(ut, "selectedFields", stringify(props.get("selectedFields")));
+                    addExt(ut, "requiredFields", stringify(props.get("requiredFields")));
                 }
             }
         }
     }
 
+    /* ====================================================================== */
+    /*  JSON WALKER                                                            */
+    /* ====================================================================== */
 
-    // ------------------------------------------------------------------------
-
-    private static void collectTaskProperties(
-        JsonNode node,
-        Map<String, JsonNode> out
-    ) {
+    private static void collectTaskProperties(JsonNode node, Map<String, JsonNode> out) {
         if (node == null) return;
 
         JsonNode stencil = node.get("stencil");
         if (stencil != null) {
-
             String type = stencil.path("id").asText();
             if ("ServiceTask".equals(type) || "UserTask".equals(type)) {
 
@@ -181,7 +187,9 @@ public class JsonToBpmn2Converter {
         }
     }
 
-    // ------------------------------------------------------------------------
+    /* ====================================================================== */
+    /*  HELPERS                                                                */
+    /* ====================================================================== */
 
     private static void addExt(BaseElement el, String key, String val) {
         if (val == null || val.isBlank()) return;
@@ -195,6 +203,15 @@ public class JsonToBpmn2Converter {
         el.addExtensionElement(ext);
     }
 
+    private static String stringify(JsonNode node) {
+        if (node == null || node.isNull()) return null;
+        if (node.isArray()) {
+            List<String> vals = new ArrayList<>();
+            node.forEach(n -> vals.add(n.asText()));
+            return String.join(",", vals);
+        }
+        return node.asText();
+    }
 
     private static String text(JsonNode n) {
         return (n == null || n.isNull()) ? null : n.asText();

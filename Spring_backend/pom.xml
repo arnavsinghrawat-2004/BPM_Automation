@@ -9,15 +9,13 @@
 
     <!-- Spring Boot parent -->
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
-        <relativePath/>
+        <groupId>com.iongroup</groupId>
+        <artifactId>bpm-automation-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.iongroup</groupId>
     <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
 
     <name>Backend</name>
     <description>Spring backend for UI → BPMN conversion</description>
@@ -36,10 +34,10 @@
 
         <!-- 🧠 UI JSON → BPMN2 conversion library (BLACK BOX) -->
         <dependency>
-            <groupId>com.example</groupId>
+            <groupId>com.iongroup</groupId>
             <artifactId>json2bpmn2</artifactId>
-            <version>1.0.0</version>
         </dependency>
+
 
         <!-- 🧪 Optional: testing -->
         <dependency>
