@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/delegations")
 public class DelegationController {
 
-//     private final DelegationService delegationService;
+    private final DelegationService delegationService;
 
-//     public DelegationController(DelegationService delegationService) {
-//         this.delegationService = delegationService;
-//     }
+    public DelegationController(DelegationService delegationService) {
+        this.delegationService = delegationService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllDelegations() {

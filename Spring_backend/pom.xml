@@ -26,20 +26,20 @@
 
     <dependencies>
 
-        <!-- 🌐 REST API -->
+        <!--  REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 🧠 UI JSON → BPMN2 conversion library (BLACK BOX) -->
+        <!--  UI JSON → BPMN2 conversion library (BLACK BOX) -->
         <dependency>
             <groupId>com.iongroup</groupId>
             <artifactId>json2bpmn2</artifactId>
         </dependency>
 
 
-        <!-- 🧪 Optional: testing -->
+        <!--  Optional: testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
