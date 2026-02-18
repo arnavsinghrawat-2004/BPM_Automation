@@ -91,7 +91,7 @@
         "delegationName": "CheckEligibility",
         "delegationType": "SERVICE",
         "customFields": {
-          "AMOUNT": "5000"
+          "AMOUNT": "1000"
         }
       },
       "width": 160,

@@ -1,4 +1,4 @@
-package com.example;
+package com.iongroup.json2bpmn2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

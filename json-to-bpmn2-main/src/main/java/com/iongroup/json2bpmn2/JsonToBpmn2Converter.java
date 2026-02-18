@@ -1,4 +1,4 @@
-package com.example.flow;
+package com.iongroup.json2bpmn2;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +26,22 @@ public class JsonToBpmn2Converter {
     /* ====================================================================== */
     /*  PUBLIC API (used by Spring backend)                                   */
     /* ====================================================================== */
+    public static String convert(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode editorRoot = mapper.readTree(json);
+
+            BpmnModel model = convertAndEnrich(editorRoot);
+
+            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+            byte[] xmlBytes = xmlConverter.convertToXML(model);
+
+            return new String(xmlBytes, StandardCharsets.UTF_8);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert JSON to BPMN 2.0 XML", e);
+        }
+    }
 
     public static BpmnModel convertAndEnrich(JsonNode editorRoot) {
 

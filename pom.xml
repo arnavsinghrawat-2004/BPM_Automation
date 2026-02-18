@@ -51,6 +51,18 @@
             </dependency>
 
             <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.iongroup</groupId>
                 <artifactId>json2bpmn2</artifactId>
                 <version>${project.version}</version>

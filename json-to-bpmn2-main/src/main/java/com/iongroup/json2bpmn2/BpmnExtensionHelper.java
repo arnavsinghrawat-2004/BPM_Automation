@@ -1,4 +1,4 @@
-package com.example.flow;
+package com.iongroup.json2bpmn2;
 
 import org.flowable.bpmn.model.ExtensionElement;
 import org.flowable.bpmn.model.FlowElement;
