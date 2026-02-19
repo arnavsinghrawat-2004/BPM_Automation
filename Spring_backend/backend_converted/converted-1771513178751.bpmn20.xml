@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Open Source Modeler">
+  <process id="ComplexProcess" name="Complex Loan Process" isExecutable="true">
+    <startEvent id="startEvent"></startEvent>
+    <serviceTask id="node_1" name="Service Task" flowable:class="com.iongroup.library.adapter.flowable.OperationDispatcherDelegate">
+      <extensionElements>
+        <flowable:asynchronousdefinition xmlns:flowable="http://flowable.org/bpmn"><![CDATA[false]]></flowable:asynchronousdefinition>
+        <flowable:exclusive xmlns:flowable="http://flowable.org/bpmn"><![CDATA[true]]></flowable:exclusive>
+        <flowable:servicetaskclass xmlns:flowable="http://flowable.org/bpmn"><![CDATA[com.iongroup.library.adapter.flowable.OperationDispatcherDelegate]]></flowable:servicetaskclass>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="endEvent"></endEvent>
+    <sequenceFlow id="reactflow__edge-node_0s-right-node_1s-left" sourceRef="startEvent" targetRef="node_1"></sequenceFlow>
+    <sequenceFlow id="reactflow__edge-node_1s-right-node_2t-left" sourceRef="node_1" targetRef="endEvent"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ComplexProcess">
+    <bpmndi:BPMNPlane bpmnElement="ComplexProcess" id="BPMNPlane_ComplexProcess">
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="BPMNShape_startEvent">
+        <omgdc:Bounds height="100.0" width="100.0" x="-276.0" y="115.9000015258789"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="node_1" id="BPMNShape_node_1">
+        <omgdc:Bounds height="80.0" width="160.0" x="-117.5" y="125.35000228881836"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="BPMNShape_endEvent">
+        <omgdc:Bounds height="100.0" width="100.0" x="102.5" y="114.85000228881836"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="reactflow__edge-node_1s-right-node_2t-left" id="BPMNEdge_reactflow__edge-node_1s-right-node_2t-left" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="42.45" y="133.42954774336383"></omgdi:waypoint>
+        <omgdi:waypoint x="102.51674326428353" y="130.5627285511377"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="reactflow__edge-node_0s-right-node_1s-left" id="BPMNEdge_reactflow__edge-node_0s-right-node_1s-left" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="-246.07630073659607" y="131.78978977756628"></omgdi:waypoint>
+        <omgdi:waypoint x="-117.50000000000023" y="139.45568045005436"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -17,16 +17,16 @@ public class FlowableConversionResponse {
 
     public FlowableConversionResponse() {}
 
-    // public FlowableConversionResponse(boolean success, String message, String bpmnXml, 
-    //                                   ObjectNode flowableJsonNode, Map<String, Object> executionResult) {
-    //     this.success = success;
-    //     this.message = message;
-    //     this.bpmnXml = bpmnXml;
-    //     // Convert ObjectNode to Map for proper JSON serialization
-    //     ObjectMapper mapper = new ObjectMapper();
-    //     this.flowableJson = mapper.convertValue(flowableJsonNode, Map.class);
-    //     this.executionResult = executionResult;
-    // }
+    public FlowableConversionResponse(boolean success, String message, String bpmnXml, 
+                                      ObjectNode flowableJsonNode, Map<String, Object> executionResult) {
+        this.success = success;
+        this.message = message;
+        this.bpmnXml = bpmnXml;
+        // Convert ObjectNode to Map for proper JSON serialization
+        ObjectMapper mapper = new ObjectMapper();
+        this.flowableJson = mapper.convertValue(flowableJsonNode, Map.class);
+        this.executionResult = executionResult;
+    }
     public FlowableConversionResponse(
             JsonNode flowableJsonNode,
             String bpmnXml
