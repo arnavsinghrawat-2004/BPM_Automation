@@ -1,40 +1,41 @@
 package com.iongroup.backend.controller;
- 
-import com.iongroup.backend.runtime.FlowableRuntimeService;
-import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade;
-import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade.ConversionResult;
+
+import com.iongroup.library.flowable_service.FlowableRuntimeService;  
 import com.iongroup.library.flowable_service.FlowableProcessService;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.iongroup.library.flowable_service.UiJsonToBpmnService;
+import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade.ConversionResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
-import org.flowable.engine.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
- 
+
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
- 
+
 @RestController
 @RequestMapping("/process")
 public class ProcessExecutionController {
 
     private final FlowableRuntimeService flowableRuntimeService;
     private final FlowableProcessService flowableProcessService;
+    private final UiJsonToBpmnService uiJsonToBpmnService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ProcessExecutionController(FlowableRuntimeService flowableRuntimeService,
-                                      FlowableProcessService flowableProcessService) {
+    public ProcessExecutionController(
+            FlowableRuntimeService flowableRuntimeService,
+            FlowableProcessService flowableProcessService,
+            UiJsonToBpmnService uiJsonToBpmnService) {
         this.flowableRuntimeService = flowableRuntimeService;
         this.flowableProcessService = flowableProcessService;
+        this.uiJsonToBpmnService = uiJsonToBpmnService;
     }
 
     @PostMapping("/execute")
     public ResponseEntity<?> execute(@RequestBody String json) throws Exception {
-        JsonNode uiJson = objectMapper.readTree(json);
-        ConversionResult result = UiJsonToBpmn2Facade.convert(uiJson);
+        ConversionResult result = uiJsonToBpmnService.convert(json);
         String bpmnXml = result.getBpmnXml();
 
         flowableRuntimeService.deployBpmn(
@@ -56,7 +57,6 @@ public class ProcessExecutionController {
             @PathVariable String nodeId,
             @RequestParam String processInstanceId,
             @RequestBody Map<String, Object> body) {
-
         flowableProcessService.completeUserTask(processInstanceId, nodeId, body);
         return ResponseEntity.ok("done");
     }

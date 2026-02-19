@@ -3,8 +3,8 @@ package com.iongroup.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.iongroup.backend.service.DelegationService;
-import com.iongroup.library.registry.RegistryConfiguration;
+//import com.iongroup.backend.service.DelegationService;
+//import com.iongroup.library.registry.RegistryConfiguration;
 
 @SpringBootApplication
 public class BackendApplication {
