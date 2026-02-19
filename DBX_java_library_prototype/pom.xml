@@ -91,6 +91,11 @@
             <version>6.1.0</version> <!-- or match your Spring Boot version -->
         </dependency>
 
+        <dependency>
+            <groupId>com.iongroup</groupId>
+            <artifactId>json2bpmn2</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
