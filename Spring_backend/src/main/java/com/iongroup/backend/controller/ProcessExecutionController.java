@@ -24,9 +24,17 @@ public class ProcessExecutionController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final org.flowable.engine.TaskService taskService;
  
-    public ProcessExecutionController(FlowableRuntimeService flowableRuntimeService, org.flowable.engine.TaskService taskService) {
+    private final org.flowable.engine.HistoryService historyService;
+    private final org.flowable.engine.RuntimeService runtimeService;
+
+    public ProcessExecutionController(FlowableRuntimeService flowableRuntimeService,
+                                    org.flowable.engine.TaskService taskService,
+                                    org.flowable.engine.HistoryService historyService,
+                                    org.flowable.engine.RuntimeService runtimeService) {
         this.flowableRuntimeService = flowableRuntimeService;
         this.taskService = taskService;
+        this.historyService = historyService;
+        this.runtimeService = runtimeService;
     }
  
     @PostMapping("/execute")
@@ -77,5 +85,44 @@ public class ProcessExecutionController {
         taskService.complete(task.getId(), body);
  
         return ResponseEntity.ok("done");
+    }
+    @GetMapping("/status/{processInstanceId}")
+    public ResponseEntity<?> getProcessStatus(@PathVariable String processInstanceId) {
+
+        // 1. ACTIVE (currently executing) nodes
+        List<String> activeNodes = runtimeService.createExecutionQuery()
+                .processInstanceId(processInstanceId)
+                .list()
+                .stream()
+                .map(execution -> execution.getActivityId())
+                .filter(id -> id != null)
+                .toList();
+
+        // 2. COMPLETED nodes (already finished)
+        List<String> completedNodes = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .finished()
+                .list()
+                .stream()
+                .map(activity -> activity.getActivityId())
+                .toList();
+
+        // 3. PENDING user tasks (waiting for human input)
+        List<Map<String, String>> pendingTasks = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .list()
+                .stream()
+                .map(task -> Map.of(
+                        "nodeId", task.getTaskDefinitionKey(),
+                        "taskName", task.getName(),
+                        "taskId", task.getId()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(Map.of(
+                "activeNodes", activeNodes,
+                "completedNodes", completedNodes,
+                "pendingUserTasks", pendingTasks
+        ));
     }
 }
