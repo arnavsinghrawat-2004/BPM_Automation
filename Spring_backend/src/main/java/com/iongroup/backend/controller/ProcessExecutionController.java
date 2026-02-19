@@ -69,4 +69,23 @@ public class ProcessExecutionController {
                 "pendingUserTasks", flowableProcessService.getPendingUserTasks(processInstanceId)
         ));
     }
+    @DeleteMapping("/terminate/{processInstanceId}")
+    public ResponseEntity<?> terminate(
+            @PathVariable String processInstanceId,
+            @RequestParam(defaultValue = "Manually terminated") String reason) {
+        flowableProcessService.terminateProcess(processInstanceId, reason);
+        return ResponseEntity.ok("Process terminated");
+    }
+
+    @PostMapping("/suspend/{processInstanceId}")
+    public ResponseEntity<?> suspend(@PathVariable String processInstanceId) {
+        flowableProcessService.suspendProcess(processInstanceId);
+        return ResponseEntity.ok("Process suspended");
+    }
+
+    @PostMapping("/resume/{processInstanceId}")
+    public ResponseEntity<?> resume(@PathVariable String processInstanceId) {
+        flowableProcessService.resumeProcess(processInstanceId);
+        return ResponseEntity.ok("Process resumed");
+    }
 }

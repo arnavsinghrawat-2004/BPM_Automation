@@ -39,7 +39,7 @@ public class RegistryConfiguration {
 
         // 2. Print total count
         int count = RegistryConfiguration.getOperationCount();
-        System.out.println("Total operations: " + count);
+        //System.out.println("Total operations: " + count);
 
         // 3. Print operations filtered by a DelegationType (example: SERVICE)
         System.out.println("=== SERVICE Operations ===");
@@ -55,7 +55,7 @@ public class RegistryConfiguration {
             URL jarUrl = RegistryConfiguration.class.getProtectionDomain()
                     .getCodeSource().getLocation();
 
-            System.out.println("JAR location: " + jarUrl);
+            //System.out.println("JAR location: " + jarUrl);
 
             String packagePath = BASE_PACKAGE.replace('.', '/');
 
@@ -88,7 +88,7 @@ public class RegistryConfiguration {
                                         anno.type(),
                                         List.of(anno.selectableFields()),
                                         List.of(anno.customizableFields())));
-                                System.out.println("Registered: " + className);
+                                //System.out.println("Registered: " + className);
                             }
                         } catch (ClassNotFoundException e) {
                             System.err.println("Could not load class: " + className);
@@ -100,7 +100,7 @@ public class RegistryConfiguration {
             throw new RuntimeException("Failed to scan for WorkFlowOperation annotations", e);
         }
 
-        System.out.println("Total operations found: " + result.size());
+        //System.out.println("Total operations found: " + result.size());
         return result;
     }
 

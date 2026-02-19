@@ -70,4 +70,16 @@ public class FlowableProcessService {
 
         taskService.complete(task.getId(), variables);
     }
+
+    public void terminateProcess(String processInstanceId, String reason) {
+        runtimeService.deleteProcessInstance(processInstanceId, reason);
+    }
+    
+    public void suspendProcess(String processInstanceId) {
+        runtimeService.suspendProcessInstanceById(processInstanceId);
+    }
+    
+    public void resumeProcess(String processInstanceId) {
+        runtimeService.activateProcessInstanceById(processInstanceId);
+    }
 }
