@@ -7,6 +7,7 @@ export type BaseNodeData = {
   description?: string;
   delegationId?: string;
   delegationName?: string;
+  status?: "pending" | "active" | "completed";
 };
 
 interface BaseNodeProps extends NodeProps<BaseNodeData> {
@@ -15,10 +16,22 @@ interface BaseNodeProps extends NodeProps<BaseNodeData> {
 }
 
 const BaseNode = ({ data, selected, Icon, color, id }: BaseNodeProps) => {
+  const getStatusClasses = () => {
+    switch (data.status) {
+      case "completed":
+        return "border-green-500 bg-green-50";
+      case "active":
+        return "border-yellow-500 bg-yellow-50";
+      case "pending":
+      default:
+        return "border-border bg-card";
+    }
+  };
+
   return (
     <div
-      className={`w-[160px] h-[80px] rounded-lg border-2 bg-card shadow-md flex items-center gap-3 px-4 transition-colors cursor-pointer hover:border-primary/50 ${
-        selected ? "border-primary ring-2 ring-primary/20" : "border-border"
+      className={`w-[160px] h-[80px] rounded-lg border-2 shadow-md flex items-center gap-3 px-4 transition-colors cursor-pointer hover:border-primary/50 ${getStatusClasses()} ${
+        selected ? "ring-2 ring-primary/20" : ""
       }`}
     >
       <Handle id="t-top" type="target" position={Position.Top} className="!w-3 !h-3 !bg-muted-foreground !border-2 !border-background" />

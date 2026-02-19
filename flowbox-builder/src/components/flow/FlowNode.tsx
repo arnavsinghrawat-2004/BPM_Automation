@@ -16,6 +16,7 @@ export type FlowNodeData = {
   delegationType?: "USER_TASK" | "SERVICE" | "SCRIPT";
   customFields?: Record<string, string>;
   selectedFields?: string[];
+  status?: "pending" | "active" | "completed";
 };
 
 const nodeComponentMap = {

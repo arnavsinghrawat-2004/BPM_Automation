@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, DragEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactFlow, {
   addEdge,
   Background,
@@ -43,6 +44,7 @@ const FlowCanvas = () => {
   const [isConverting, setIsConverting] = useState(false);
   const [conversionResult, setConversionResult] = useState<any>(null);
   const [conversionError, setConversionError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true, style: { stroke: "hsl(var(--muted-foreground))" } }, eds)),
@@ -156,6 +158,17 @@ const FlowCanvas = () => {
       const data = await response.json();
       setConversionResult(data);
       console.log("Conversion and execution successful:", data);
+
+      // Navigate to execution page
+      const processInstanceId = data.executionResult?.processInstanceId;
+      if (processInstanceId) {
+        const graphData = getGraphData(nodes, edges, {
+          x: rfInstance?.getViewport().x || 0,
+          y: rfInstance?.getViewport().y || 0,
+          zoom: rfInstance?.getZoom() || 1,
+        });
+        navigate(`/execution/${processInstanceId}`, { state: graphData });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error occurred";
       setConversionError(message);
