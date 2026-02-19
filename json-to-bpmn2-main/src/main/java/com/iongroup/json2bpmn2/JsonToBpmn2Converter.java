@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class JsonToBpmn2Converter {
 
-    private static final String PROCESS_ID = "ComplexProcess";
+    private static final String PROCESS_ID = "ABC";
     private static final String PROCESS_NAME = "Complex Loan Process";
 
     private static final String DISPATCHER_CLASS =
