@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.iongroup.backend.model.FlowableConversionResponse;
 import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade;
 import com.iongroup.json2bpmn2.ConversionResult;
-import com.iongroup.backend.runtime.FlowableRuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.iongroup.library.flowable_service.FlowableRuntimeService;
+
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;

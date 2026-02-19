@@ -40,6 +40,8 @@ public class CustomerCollectionServiceImpl implements CustomerDetailsCollectionS
             profile.setMonthlyIncome(new BigDecimal("50000"));
         }
 
+
+
         System.out.println("[CustomerDetailsCollectionService] Required fields populated");
     }
 }

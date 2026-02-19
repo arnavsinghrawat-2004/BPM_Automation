@@ -6,6 +6,8 @@ import ReactFlow, {
   MiniMap,
   Node,
   Edge,
+  ReactFlowProvider,
+  ConnectionMode,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -13,19 +15,22 @@ import FlowNode, { FlowNodeData } from "@/components/flow/FlowNode";
 import { GraphData } from "@/lib/graphExport";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const nodeTypes = { flowNode: FlowNode };
 
 type NodeStatus = "pending" | "active" | "completed";
 
 interface ProcessStatus {
-  activeTasks: Array<{
-    id: string;
-    name: string;
+  activeNodes: string[];
+  pendingUserTasks: Array<{
+    taskId: string;
     nodeId: string;
+    taskName: string;
   }>;
-  completedActivities: string[];
-  currentActivity?: string;
+  completedNodes: string[];
 }
 
 const ExecutionPage = () => {
@@ -37,18 +42,37 @@ const ExecutionPage = () => {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [status, setStatus] = useState<ProcessStatus | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node<FlowNodeData> | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<Record<string, string>>({});
 
+  // Load graph data
   useEffect(() => {
     if (graphData) {
       setNodes(graphData.nodes);
       setEdges(graphData.edges);
+    } else if (processInstanceId) {
+      const stored = localStorage.getItem(`graphData_${processInstanceId}`);
+      if (stored) {
+        try {
+          const parsedGraphData = JSON.parse(stored) as GraphData;
+          setNodes(parsedGraphData.nodes);
+          setEdges(parsedGraphData.edges);
+        } catch (error) {
+          console.error("Failed to parse stored graph data:", error);
+        }
+      }
     }
-  }, [graphData]);
+  }, [graphData, processInstanceId]);
 
+  // Fetch execution status
   const fetchStatus = useCallback(async () => {
     if (!processInstanceId) return;
+
     try {
-      const response = await fetch(`http://localhost:8080/process/status/${processInstanceId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/process/status/${processInstanceId}`
+      );
+
       if (response.ok) {
         const data: ProcessStatus = await response.json();
         setStatus(data);
@@ -60,40 +84,77 @@ const ExecutionPage = () => {
 
   useEffect(() => {
     fetchStatus();
-    const interval = setInterval(fetchStatus, 2000); // Poll every 2 seconds
+    const interval = setInterval(fetchStatus, 5000); // Poll every 5 seconds
     return () => clearInterval(interval);
   }, [fetchStatus]);
 
+  // Determine node status
   const getNodeStatus = (nodeId: string): NodeStatus => {
     if (!status) return "pending";
-    if (status.completedActivities.includes(nodeId)) return "completed";
-    if (status.currentActivity === nodeId) return "active";
+
+    if (status.completedNodes.includes(nodeId)) return "completed";
+
+    if (status.activeNodes.includes(nodeId)) return "active";
+
     return "pending";
   };
 
+  // Handle node click
   const handleNodeClick = useCallback(
-    async (_: React.MouseEvent, node: Node<FlowNodeData>) => {
-      if (node.data.nodeType === "user" && getNodeStatus(node.id) === "active") {
-        const task = status?.activeTasks.find((t) => t.nodeId === node.id);
-        if (task) {
-          try {
-            const response = await fetch(`http://localhost:8080/process/complete-task/${task.id}`, {
-              method: "POST",
-            });
-            if (response.ok) {
-              fetchStatus(); // Refresh status
-            }
-          } catch (error) {
-            console.error("Failed to complete task:", error);
-          }
+    (_: React.MouseEvent, node: Node<FlowNodeData>) => {
+      console.log("Clicked:", node.id);
+      console.log("Type:", node.data.nodeType);
+      console.log("Status:", getNodeStatus(node.id));
+
+      if (
+        node.data.nodeType === "user" &&
+        getNodeStatus(node.id) === "active"
+      ) {
+        setSelectedNode(node);
+        // Initialize formData with customFields values
+        const initialData: Record<string, string> = {};
+        if (node.data.customFields) {
+          Object.entries(node.data.customFields).forEach(([key, value]) => {
+            initialData[key] = value;
+          });
         }
+        setFormData(initialData);
+        setIsModalOpen(true);
       } else {
         setSelectedNode(node);
       }
     },
-    [status, fetchStatus]
+    [status]
   );
 
+  // Handle form submission for user task
+  const handleFormSubmit = useCallback(async () => {
+    if (!selectedNode || !processInstanceId) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/process/task/complete/${selectedNode.id}?processInstanceId=${processInstanceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setSelectedNode(null);
+        setFormData({});
+        fetchStatus(); // Refresh state
+      }
+    } catch (error) {
+      console.error("Failed to complete task:", error);
+    }
+  }, [selectedNode, processInstanceId, formData, fetchStatus]);
+
+  // Inject status into node data
   const updatedNodes = nodes.map((node) => ({
     ...node,
     data: {
@@ -115,25 +176,29 @@ const ExecutionPage = () => {
 
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1">
-          <ReactFlow
-            nodes={updatedNodes}
-            edges={edges}
-            onNodeClick={handleNodeClick}
-            nodeTypes={nodeTypes}
-            fitView
-            className="bg-background"
-            nodesDraggable={false}
-            nodesConnectable={false}
-            elementsSelectable={false}
-          >
-            <Background gap={16} size={1} color="hsl(var(--border))" />
-            <Controls className="[&>button]:bg-card [&>button]:border-border [&>button]:text-foreground" />
-            <MiniMap
-              nodeColor="hsl(var(--primary))"
-              maskColor="hsl(var(--background) / 0.7)"
-              className="!bg-card !border-border"
-            />
-          </ReactFlow>
+          <ReactFlowProvider>
+            <ReactFlow
+              nodes={updatedNodes}
+              edges={edges}
+              onNodeClick={handleNodeClick}
+              nodeTypes={nodeTypes}
+              defaultViewport={graphData?.viewport}
+              fitView
+              className="bg-background"
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              connectionMode={ConnectionMode.Loose}
+            >
+              <Background gap={16} size={1} color="hsl(var(--border))" />
+              <Controls className="[&>button]:bg-card [&>button]:border-border [&>button]:text-foreground" />
+              <MiniMap
+                nodeColor="hsl(var(--primary))"
+                maskColor="hsl(var(--background) / 0.7)"
+                className="!bg-card !border-border"
+              />
+            </ReactFlow>
+          </ReactFlowProvider>
         </div>
 
         {selectedNode && (
@@ -143,31 +208,46 @@ const ExecutionPage = () => {
             </CardHeader>
             <CardContent>
               <p><strong>Type:</strong> {selectedNode.data.nodeType}</p>
-              {selectedNode.data.description && (
-                <p><strong>Description:</strong> {selectedNode.data.description}</p>
-              )}
-              {selectedNode.data.selectedFields && selectedNode.data.selectedFields.length > 0 && (
-                <div>
-                  <strong>Selected Fields:</strong>
-                  <ul className="list-disc list-inside mt-1">
-                    {selectedNode.data.selectedFields.map((field) => (
-                      <li key={field}>{field}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {selectedNode.data.customFields && Object.keys(selectedNode.data.customFields).length > 0 && (
-                <div>
-                  <strong>Custom Fields:</strong>
-                  <pre className="text-xs bg-muted p-2 rounded mt-1">
-                    {JSON.stringify(selectedNode.data.customFields, null, 2)}
-                  </pre>
-                </div>
-              )}
               <p><strong>Status:</strong> {getNodeStatus(selectedNode.id)}</p>
             </CardContent>
           </Card>
         )}
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Complete Task: {selectedNode?.data.label}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              {selectedNode?.data.selectedFields?.map((field) => (
+                <div key={field}>
+                  <Label htmlFor={field}>{field.replace('_', ' ')}</Label>
+                  <Input
+                    id={field}
+                    value={formData[field] || ''}
+                    onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                  />
+                </div>
+              ))}
+              {selectedNode?.data.customFields && Object.keys(selectedNode.data.customFields).length > 0 && (
+                <div>
+                  <h4 className="font-semibold">Custom Fields</h4>
+                  {Object.entries(selectedNode.data.customFields).map(([key, value]) => (
+                    <div key={key}>
+                      <Label htmlFor={key}>{key}</Label>
+                      <Input
+                        id={key}
+                        value={formData[key] || value}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Button onClick={handleFormSubmit}>Submit</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import org.flowable.engine.TaskService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class LibraryConfig {
 
@@ -17,8 +18,9 @@ public class LibraryConfig {
     public FlowableRuntimeService flowableRuntimeService(
             RepositoryService repositoryService,
             RuntimeService runtimeService,
-            TaskService taskService) {
-        return new FlowableRuntimeService(repositoryService, runtimeService, taskService);
+            TaskService taskService,
+            HistoryService historyService) {
+        return new FlowableRuntimeService(repositoryService, runtimeService, taskService, historyService);
     }
 
     @Bean

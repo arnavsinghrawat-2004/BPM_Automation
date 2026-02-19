@@ -23,7 +23,8 @@ public class FlowableRuntimeService {
     public FlowableRuntimeService(
             RepositoryService repositoryService,
             RuntimeService runtimeService,
-            TaskService taskService) {
+            TaskService taskService,
+            HistoryService historyService) {
         this.repositoryService = repositoryService;
         this.runtimeService = runtimeService;
         this.taskService = taskService;

@@ -1,10 +1,12 @@
 package com.iongroup.backend.controller;
 
-import com.iongroup.library.flowable_service.FlowableRuntimeService;  
+import com.iongroup.library.flowable_service.FlowableRuntimeService;
+import com.iongroup.library.adapter.flowable.User_EnterCustomerDetailsTask;
 import com.iongroup.library.flowable_service.FlowableProcessService;
 import com.iongroup.library.flowable_service.UiJsonToBpmnService;
 import com.iongroup.json2bpmn2.UiJsonToBpmn2Facade.ConversionResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +18,24 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/process")
+@RequestMapping("/api/process")
 public class ProcessExecutionController {
 
     private final FlowableRuntimeService flowableRuntimeService;
     private final FlowableProcessService flowableProcessService;
     private final UiJsonToBpmnService uiJsonToBpmnService;
+    private final org.flowable.engine.TaskService taskService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ProcessExecutionController(
             FlowableRuntimeService flowableRuntimeService,
             FlowableProcessService flowableProcessService,
-            UiJsonToBpmnService uiJsonToBpmnService) {
+            UiJsonToBpmnService uiJsonToBpmnService,
+            org.flowable.engine.TaskService taskService) {
         this.flowableRuntimeService = flowableRuntimeService;
         this.flowableProcessService = flowableProcessService;
         this.uiJsonToBpmnService = uiJsonToBpmnService;
+        this.taskService = taskService;
     }
 
     @PostMapping("/execute")
@@ -40,16 +45,14 @@ public class ProcessExecutionController {
 
         flowableRuntimeService.deployBpmn(
                 "dynamic-process.bpmn20.xml",
-                new ByteArrayInputStream(bpmnXml.getBytes(StandardCharsets.UTF_8))
-        );
+                new ByteArrayInputStream(bpmnXml.getBytes(StandardCharsets.UTF_8)));
 
         ProcessInstance instance = flowableRuntimeService.startProcess("ABC");
         List<Task> tasks = flowableRuntimeService.getActiveTasks();
 
         return ResponseEntity.ok(Map.of(
                 "processInstanceId", instance.getId(),
-                "tasks", tasks.stream().map(Task::getName).toList()
-        ));
+                "tasks", tasks.stream().map(Task::getName).toList()));
     }
 
     @PostMapping("/task/complete/{nodeId}")
@@ -57,6 +60,7 @@ public class ProcessExecutionController {
             @PathVariable String nodeId,
             @RequestParam String processInstanceId,
             @RequestBody Map<String, Object> body) {
+
         flowableProcessService.completeUserTask(processInstanceId, nodeId, body);
         return ResponseEntity.ok("done");
     }
@@ -66,9 +70,9 @@ public class ProcessExecutionController {
         return ResponseEntity.ok(Map.of(
                 "activeNodes", flowableProcessService.getActiveNodes(processInstanceId),
                 "completedNodes", flowableProcessService.getCompletedNodes(processInstanceId),
-                "pendingUserTasks", flowableProcessService.getPendingUserTasks(processInstanceId)
-        ));
+                "pendingUserTasks", flowableProcessService.getPendingUserTasks(processInstanceId)));
     }
+
     @DeleteMapping("/terminate/{processInstanceId}")
     public ResponseEntity<?> terminate(
             @PathVariable String processInstanceId,

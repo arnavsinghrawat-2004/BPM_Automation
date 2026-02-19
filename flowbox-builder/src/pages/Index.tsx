@@ -142,7 +142,7 @@ const FlowCanvas = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8080/api/flowable/convert-and-execute", {
+      const response = await fetch("http://localhost:8080/api/process/execute", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,13 +160,15 @@ const FlowCanvas = () => {
       console.log("Conversion and execution successful:", data);
 
       // Navigate to execution page
-      const processInstanceId = data.executionResult?.processInstanceId;
+      const processInstanceId = data.processInstanceId;
       if (processInstanceId) {
         const graphData = getGraphData(nodes, edges, {
           x: rfInstance?.getViewport().x || 0,
           y: rfInstance?.getViewport().y || 0,
           zoom: rfInstance?.getZoom() || 1,
         });
+        // Store graph data in localStorage for persistence
+        localStorage.setItem(`graphData_${processInstanceId}`, JSON.stringify(graphData));
         navigate(`/execution/${processInstanceId}`, { state: graphData });
       }
     } catch (error) {
