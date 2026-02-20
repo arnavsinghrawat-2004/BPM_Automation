@@ -2,14 +2,18 @@ import { memo } from "react";
 import { Handle, Position, NodeProps } from "reactflow";
 import { GitBranch } from "lucide-react";
 
-const ParallelNode = ({ selected }: NodeProps<any>) => {
+const ParallelNode = ({ data, selected }: NodeProps<any>) => {
+  const statusBorder =
+    data?.status === "completed" ? "border-green-500 bg-green-500/20" :
+    data?.status === "active" ? "border-yellow-400 bg-yellow-400/20" :
+    "border-border";
   return (
     <div className="relative w-[80px] h-[80px] flex items-center justify-center">
 
       {/* DIAMOND (rotated only visually) */}
       <div
         className={`w-[56px] h-[56px] rotate-45 bg-card border-2 shadow-md flex items-center justify-center
-        ${selected ? "border-primary ring-2 ring-primary/20" : "border-border"}`}
+        ${selected ? "border-primary ring-2 ring-primary/20" : statusBorder}`}
       >
         <div className="-rotate-45">
           <GitBranch size={18} className="text-violet-500" />

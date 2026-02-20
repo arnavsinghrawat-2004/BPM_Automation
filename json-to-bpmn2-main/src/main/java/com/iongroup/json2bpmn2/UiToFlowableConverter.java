@@ -295,8 +295,8 @@ public class UiToFlowableConverter {
             c.process = new ProcessConfig("ConvertedProcess", "Converted Process", "http://flowable.org/test");
 
             // Default node type map
-            c.nodeTypeMap.put("start", NodeTypeConfig.of("StartNoneEvent", obj("overrideid", "startEvent")));
-            c.nodeTypeMap.put("end", NodeTypeConfig.of("EndNoneEvent", obj("overrideid", "endEvent")));
+            c.nodeTypeMap.put("start", NodeTypeConfig.of("StartNoneEvent", M.createObjectNode()));
+            c.nodeTypeMap.put("end", NodeTypeConfig.of("EndNoneEvent", M.createObjectNode()));
             c.nodeTypeMap.put("script", NodeTypeConfig.of("ScriptTask", obj(
                     "name", "Script Task",
                     "scriptformat", "groovy",

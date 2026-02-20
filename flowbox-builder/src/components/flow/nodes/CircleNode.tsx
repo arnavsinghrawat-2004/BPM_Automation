@@ -5,6 +5,7 @@ import { LucideIcon } from "lucide-react";
 export type CircleNodeData = {
   label: string;
   description?: string;
+  status?: "pending" | "active" | "completed";
 };
 
 interface CircleNodeProps extends NodeProps<CircleNodeData> {
@@ -13,12 +14,15 @@ interface CircleNodeProps extends NodeProps<CircleNodeData> {
 }
 
 const CircleNode = ({ data, selected, Icon, color }: CircleNodeProps) => {
+  const statusBorder =
+    data.status === "completed" ? "border-green-500 bg-green-500/20" :
+    data.status === "pending" ? "border-red-400 bg-red-400/20" :
+    "border-border";
   return (
     <div className="relative w-[100px] h-[100px] flex items-center justify-center">
-      {/* CIRCLE */}
       <div
         className={`w-[80px] h-[80px] rounded-full bg-card border-2 shadow-md flex items-center justify-center transition-colors ${
-          selected ? "border-primary ring-2 ring-primary/20" : "border-border"
+          selected ? "border-primary ring-2 ring-primary/20" : statusBorder
         }`}
       >
         <div className={`${color}`}>
